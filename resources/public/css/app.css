@@ -1,0 +1,69 @@
+body {
+    padding-bottom: 20px;
+}
+
+a {
+    cursor:pointer;
+}
+
+.calendar-grid {
+    min-width: 800px;
+}
+
+.calendar-grid-title {
+    text-align: center;
+    font-size: 20px;
+    margin-bottom: 10px;
+}
+
+.calendar-grid-hours {
+    float: left;
+    width: 60px;
+}
+
+.calendar-grid-content {
+    overflow: hidden;
+}
+
+.calendar-grid-column {
+    float: left;
+    width: 14.2%;
+    border-left: 1px solid #eee;
+}
+
+.calendar-grid-hours-header,
+.calendar-grid-day-header {
+    height: 30px;
+}
+
+.calendar-grid-day-header {
+    text-align: center;
+    color: #999;
+    font-size: 12px;
+}
+
+.calendar-grid-hour-cell {
+    height: 40px;
+    border-top: 1px solid #eee;
+}
+
+.calendar-grid-day-bookings {
+    position: relative;
+}
+
+.calendar-grid-booking {
+    position: absolute;
+    left: -1px;
+    right: -1px;
+    border: 2px solid rgb(200, 45, 15);
+    padding: 3px;
+    background: rgb(241, 85, 35);
+}
+
+.calendar-grid-booking-overlaps-previous {
+    border-top: none;
+}
+
+.calendar-grid-booking-overlaps-next {
+    border-bottom: none;
+}
