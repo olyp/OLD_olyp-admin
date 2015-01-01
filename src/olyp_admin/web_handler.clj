@@ -6,7 +6,8 @@
             bidi.ring
             ring.middleware.anti-forgery
             ring.middleware.session
-            ring.middleware.params))
+            ring.middleware.params
+            [olyp-admin.web-handlers.users-handler :as users-handler]))
 
 (defn first-step-optimizations [assets options]
   (-> assets
@@ -32,7 +33,10 @@
    (assets/load-bundle "public" "app.css" ["/bootstrap/css/bootstrap.css"
                                            "/bootstrap/css/bootstrap-theme.css"
                                            "/css/app.css"])
-   (assets/load-bundle "public" "booking.js" [])))
+   (assets/load-bundle "public" "users.js" ["/js/users/users_components.js"
+                                            "/js/users/users_store.js"
+                                            "/js/users/users_actions.js"
+                                            "/js/users/users.js"])))
 
 (defn get-assets [env]
   (if (= :dev env)
@@ -54,8 +58,11 @@
     (handler (assoc req
                :olyp-env {:api-ctx olyp-central-api-client-ctx}))))
 
-(defn app-handler [req]
-  {:status 200 :body "wut"})
+(def app-handler
+  (bidi.ring/make-handler
+   [""
+    {"/" {:get (fn [req] {:status 302 :headers {"Location" "/users"}})}
+     "/users" #'users-handler/users-page}]))
 
 (defn create-actual-handler [olyp-central-api-client-ctx]
   (->
