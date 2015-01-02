@@ -98,7 +98,7 @@
                     a({className: "btn btn-xs btn-default", onClick: this.generatePassword},
                       "Generate"),
                     input({type: "text", className: "form-control", valueLink: this.linkState("password")})),
-                input({type: "submit", value: "Save user", className: "btn btn-primary"}));
+                input({type: "submit", value: "Create user", className: "btn btn-primary"}));
         }
     });
     var UserForm = React.createFactory(UserFormClass);
