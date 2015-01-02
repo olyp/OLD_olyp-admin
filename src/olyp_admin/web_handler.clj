@@ -6,9 +6,11 @@
             bidi.ring
             ring.middleware.anti-forgery
             ring.middleware.session
+            ring.middleware.session.cookie
             ring.middleware.params
             [olyp-admin.web-handlers.users-handler :as users-handler]
-            [olyp-admin.web-handlers.central-api-proxy-handler :as central-api-proxy-handler]))
+            [olyp-admin.web-handlers.central-api-proxy-handler :as central-api-proxy-handler])
+  (:import [java.util.concurrent TimeUnit]))
 
 (defn first-step-optimizations [assets options]
   (-> assets
@@ -67,20 +69,24 @@
      "/users" #'users-handler/users-page
      "/central_api_proxy" {[[#".*" :path] ""] central-api-proxy-handler/central-api-proxy}}]))
 
-(defn create-actual-handler [olyp-central-api-client-ctx]
+(defn create-actual-handler [olyp-central-api-client-ctx cookie-secret]
   (->
    app-handler
    (wrap-olyp-env olyp-central-api-client-ctx)
    wrap-anti-forgery-token-hack
    ring.middleware.anti-forgery/wrap-anti-forgery
-   ring.middleware.session/wrap-session
+   (ring.middleware.session/wrap-session
+    {:store (ring.middleware.session.cookie/cookie-store
+             {:key cookie-secret})
+     :cookie-name "olyp-admin"
+     :cookie-attrs {:max-age (.convert TimeUnit/SECONDS 30 TimeUnit/DAYS)}})
    ring.middleware.params/wrap-params))
 
-(defn create-handler [{:keys [env olyp-central-api-client-ctx]}]
+(defn create-handler [{:keys [env olyp-central-api-client-ctx cookie-secret]}]
   ((if (= :dev env)
       strategies/serve-live-assets
       strategies/serve-frozen-assets)
-   (create-actual-handler olyp-central-api-client-ctx)
+   (create-actual-handler olyp-central-api-client-ctx cookie-secret)
    #(get-assets env)
    optimizations/none
    {}))

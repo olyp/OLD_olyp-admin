@@ -9,7 +9,8 @@
   (->>
    {:olyp-central-api {:url "http://localhost:3000"}
     :web {:port 3002}
-    :env :dev}
+    :env :dev
+    :cookie-secret "12345678abcdef12"}
    olyp-admin.app/create-system
    component/start
    (def app)))
