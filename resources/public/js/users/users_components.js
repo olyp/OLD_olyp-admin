@@ -18,6 +18,49 @@
         }
     };
 
+    var UserListItemClass = React.createClass({
+        mixins: [FluxChildComponentMixin],
+
+        onEditUserClicked: function () {
+            this.props.fluxActions.editUser(this.props.user);
+        },
+
+        onDeleteUserClicked: function () {
+            this.props.fluxActions.deleteUser(this.props.user);
+        },
+
+        render: function () {
+            var user = this.props.user;
+
+            return div(
+                {className: "row"},
+                div({className: "col-md-3"}, user.email),
+                div({className: "col-md-3"}, user.name),
+                div({className: "col-md-1"}, user.zip),
+                div({className: "col-md-2"}, user.city),
+                div({className: "col-md-3"},
+                    a({className: "btn btn-default", onClick: this.onEditUserClicked},
+                      "Edit"),
+                    " ",
+                    a({className: "btn btn-default", onClick: this.onDeleteUserClicked},
+                      "Delete")));
+        }
+    });
+    var UserListItem = React.createFactory(UserListItemClass);
+
+    var UserListClass = React.createClass({
+        mixins: [FluxChildComponentMixin],
+
+        render: function () {
+            return div(
+                null,
+                this.props.users.map(function (user) {
+                    return UserListItem({key: "user-" + user.id, fluxActions: this.props.fluxActions, user: user});
+                }.bind(this)))
+        }
+    });
+    var UserList = React.createFactory(UserListClass);
+
     var UserFormClass = React.createClass({
         mixins: [FluxChildComponentMixin, React.addons.LinkedStateMixin],
 
@@ -45,7 +88,7 @@
                     input({type: "text", className: "form-control", valueLink: this.linkState("name")})),
                 div({className: "form-group"},
                     label(null, "Zip code"),
-                    input({type: "text", className: "form-control", valueLink: this.linkState("zipCode")})),
+                    input({type: "text", className: "form-control", valueLink: this.linkState("zip")})),
                 div({className: "form-group"},
                     label(null, "City"),
                     input({type: "text", className: "form-control", valueLink: this.linkState("city")})),
@@ -66,7 +109,7 @@
         render: function () {
             return div(
                 {className: "row"},
-                div({className: "col-md-9"}, "Users list"),
+                div({className: "col-md-9"}, UserList({fluxActions: this.props.fluxActions, users: this.props.fluxStore.getUsers()})),
                 div({className: "col-md-3"}, UserForm({fluxActions: this.props.fluxActions})));
         }
     });

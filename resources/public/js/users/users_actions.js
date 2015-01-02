@@ -3,6 +3,19 @@
     var PASSWORD_SIZE = 10;
 
     function usersActionsFactory(fluxStore, apiUtils) {
+        function fetchUsers() {
+            apiUtils.getAllUsers().then(
+                function (res) {
+                    fluxStore.setUsers(res);
+                },
+                function (e) {
+                    alert("An unknown error occurred: " + JSON.stringify(e));
+                }
+            );
+        }
+
+        fetchUsers();
+
         return {
             generateRandomPassword: function () {
                 var res = [];
@@ -22,7 +35,32 @@
                 return res.join("");
             },
 
-            createUser: function () {
+            createUser: function (userData) {
+                apiUtils.createUser(userData).then(
+                    function () {
+                        fetchUsers();
+                        // TODO: Reset form
+                    },
+                    function (e) {
+                        alert("An unknown error occurred: " + JSON.stringify(e));
+                    }
+                );
+            },
+
+            editUser: function (user) {
+                console.log(user);
+            },
+
+            deleteUser: function (user) {
+                if (confirm("Are you sure you want to delete the user " + user.email + "?")) {
+                    apiUtils.deleteUser(user.id).then(
+                        function () {
+                            fetchUsers();
+                        },
+                        function (e) {
+                            alert("An unknown error occurred: " + JSON.stringify(e));
+                        })
+                }
             }
         };
     }

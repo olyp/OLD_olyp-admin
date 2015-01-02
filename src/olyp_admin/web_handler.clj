@@ -7,7 +7,8 @@
             ring.middleware.anti-forgery
             ring.middleware.session
             ring.middleware.params
-            [olyp-admin.web-handlers.users-handler :as users-handler]))
+            [olyp-admin.web-handlers.users-handler :as users-handler]
+            [olyp-admin.web-handlers.central-api-proxy-handler :as central-api-proxy-handler]))
 
 (defn first-step-optimizations [assets options]
   (-> assets
@@ -29,7 +30,8 @@
 
 (defn get-optimizable-assets []
   (concat
-   (assets/load-bundle "public" "lib.js" [])
+   (assets/load-bundle "public" "lib.js" ["/js/lib/when-3.6.4.js"
+                                          "/js/olyp_app_utils/http.js"])
    (assets/load-bundle "public" "app.css" ["/bootstrap/css/bootstrap.css"
                                            "/bootstrap/css/bootstrap-theme.css"
                                            "/css/app.css"])
@@ -62,7 +64,8 @@
   (bidi.ring/make-handler
    [""
     {"/" {:get (fn [req] {:status 302 :headers {"Location" "/users"}})}
-     "/users" #'users-handler/users-page}]))
+     "/users" #'users-handler/users-page
+     "/central_api_proxy" {[[#".*" :path] ""] central-api-proxy-handler/central-api-proxy}}]))
 
 (defn create-actual-handler [olyp-central-api-client-ctx]
   (->

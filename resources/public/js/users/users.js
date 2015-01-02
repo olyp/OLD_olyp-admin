@@ -1,5 +1,26 @@
 (function () {
-    var apiUtils = {};
+    var csrfToken = document.querySelector("meta[name=csrf-token]");
+    if (csrfToken) {
+        var CSRF_TOKEN = csrfToken.getAttribute("content");
+    } else {
+        throw new Error("Unable to find CSRF token");
+    }
+
+    var http = OLYP_HTTP_FACTORY(CSRF_TOKEN)
+
+    var apiUtils = {
+        getAllUsers: function () {
+            return http("GET", "/central_api_proxy/users");
+        },
+
+        createUser: function (userData) {
+            return http("POST", "/central_api_proxy/users", userData);
+        },
+
+        deleteUser: function (userId) {
+            return http("DELETE", "/central_api_proxy/users/" + userId);
+        }
+    };
 
     var fluxStore = USERS_STORE_FACTORY();
     var fluxActions = USERS_ACTIONS_FACTORY(fluxStore, apiUtils);
