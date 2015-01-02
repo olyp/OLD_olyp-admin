@@ -65,7 +65,6 @@
                         alert("An unknown error occurred: " + JSON.stringify(e));
                     }
                 );
-                console.log(user, userData);
             },
 
             changeUserPassword: function (user) {
