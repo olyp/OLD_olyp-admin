@@ -4,6 +4,7 @@
     var input = React.DOM.input;
     var label = React.DOM.label;
     var a = React.DOM.a;
+    var p = React.DOM.p;
 
     var FluxRootComponentMixin = {
         propTypes: {
@@ -22,7 +23,7 @@
         mixins: [FluxChildComponentMixin],
 
         onEditUserClicked: function () {
-            this.props.fluxActions.editUser(this.props.user);
+            this.props.fluxActions.showFormForEditUser(this.props.user);
         },
 
         onDeleteUserClicked: function () {
@@ -30,7 +31,7 @@
         },
 
         onChangePasswordClicked: function () {
-            this.props.fluxActions.changeUserPassword(this.props.user);
+            this.props.fluxActions.showFormForChangeUserPassword(this.props.user);
         },
 
         render: function () {
@@ -155,6 +156,43 @@
     });
     var EditUserForm = React.createFactory(EditUserFormClass);
 
+    var ChangeUserPasswordFormClass = React.createClass({
+        mixins: [FluxChildComponentMixin, React.addons.LinkedStateMixin],
+
+        getInitialState: function () {
+            return {};
+        },
+
+        onSubmit: function (e) {
+            e.preventDefault();
+            this.props.fluxActions.changeUserPassword(this.props.user, this.state.password);
+        },
+
+        onCancel: function () {
+            this.props.fluxActions.cancelEditUser();
+        },
+
+        generatePassword: function () {
+            this.setState({password: this.props.fluxActions.generateRandomPassword()})
+        },
+
+        render: function () {
+            return form(
+                {onSubmit: this.onSubmit},
+                p(null, "Changing password for user " + this.props.user.email),
+                div({className: "form-group"},
+                    label(null, "Password"),
+                    " ",
+                    a({className: "btn btn-xs btn-default", onClick: this.generatePassword},
+                      "Generate"),
+                    input({type: "text", className: "form-control", valueLink: this.linkState("password")})),
+                input({type: "submit", value: "Change password", className: "btn btn-primary"}),
+                " ",
+                a({className: "btn btn-default", onClick: this.onCancel}, "Cancel"));
+        }
+    });
+    var ChangeUserPasswordForm = React.createFactory(ChangeUserPasswordFormClass);
+
     var UsersAppClass = React.createClass({
         mixin: [FluxRootComponentMixin],
 
@@ -165,7 +203,7 @@
             case "edit":
                 return EditUserForm({fluxActions: this.props.fluxActions, user: this.props.fluxStore.getUserToEdit()});
             case "changePassword":
-                return div(null, "change password!");
+                return ChangeUserPasswordForm({fluxActions: this.props.fluxActions, user: this.props.fluxStore.getUserToEdit()});
             }
         },
 

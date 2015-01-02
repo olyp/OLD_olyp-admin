@@ -47,7 +47,7 @@
                 );
             },
 
-            editUser: function (user) {
+            showFormForEditUser: function (user) {
                 fluxStore.editUser(user);
             },
 
@@ -67,8 +67,20 @@
                 );
             },
 
-            changeUserPassword: function (user) {
+            showFormForChangeUserPassword: function (user) {
                 fluxStore.changeUserPassword(user);
+            },
+
+            changeUserPassword: function (user, password) {
+                apiUtils.changeUserPassword(user.id, password).then(
+                    function () {
+                        fluxStore.showNewUserForm();
+                        fetchUsers();
+                    },
+                    function (e) {
+                        alert("An unknown error occurred: " + JSON.stringify(e));
+                    }
+                );
             },
 
             deleteUser: function (user) {

@@ -40,6 +40,7 @@
 
             changeUserPassword: function (user) {
                 currentUserForm = "changePassword";
+                userToEdit = user;
                 usersAppInst.forceUpdate();
             }
         };

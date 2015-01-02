@@ -23,6 +23,10 @@
 
         deleteUser: function (userId) {
             return http("DELETE", "/central_api_proxy/users/" + userId);
+        },
+
+        changeUserPassword: function (userId, password) {
+            return http("PUT", "/central_api_proxy/users/" + userId + "/password", {password: password});
         }
     };
 
