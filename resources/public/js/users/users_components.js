@@ -29,6 +29,10 @@
             this.props.fluxActions.deleteUser(this.props.user);
         },
 
+        onChangePasswordClicked: function () {
+            this.props.fluxActions.changeUserPassword(this.props.user);
+        },
+
         render: function () {
             var user = this.props.user;
 
@@ -39,11 +43,14 @@
                 div({className: "col-md-1"}, user.zip),
                 div({className: "col-md-2"}, user.city),
                 div({className: "col-md-3"},
-                    a({className: "btn btn-default", onClick: this.onEditUserClicked},
+                    a({className: "btn btn-default btn-xs", onClick: this.onEditUserClicked},
                       "Edit"),
                     " ",
-                    a({className: "btn btn-default", onClick: this.onDeleteUserClicked},
-                      "Delete")));
+                    a({className: "btn btn-default btn-xs", onClick: this.onDeleteUserClicked},
+                      "Delete"),
+                    " ",
+                    a({className: "btn btn-default btn-xs", onClick: this.onChangePasswordClicked},
+                      "Change password")));
         }
     });
     var UserListItem = React.createFactory(UserListItemClass);
@@ -61,7 +68,7 @@
     });
     var UserList = React.createFactory(UserListClass);
 
-    var UserFormClass = React.createClass({
+    var CreateUserFormClass = React.createClass({
         mixins: [FluxChildComponentMixin, React.addons.LinkedStateMixin],
 
         getInitialState: function () {
@@ -101,16 +108,72 @@
                 input({type: "submit", value: "Create user", className: "btn btn-primary"}));
         }
     });
-    var UserForm = React.createFactory(UserFormClass);
+    var CreateUserForm = React.createFactory(CreateUserFormClass);
+
+
+    var EditUserFormClass = React.createClass({
+        mixins: [FluxChildComponentMixin, React.addons.LinkedStateMixin],
+
+        getInitialState: function () {
+            return {
+                email: this.props.user.email,
+                name: this.props.user.name,
+                zip: this.props.user.zip,
+                city: this.props.user.city,
+                version: this.props.user.version
+            };
+        },
+
+        onSubmit: function (e) {
+            e.preventDefault();
+            this.props.fluxActions.updateUser(this.props.user, this.state);
+        },
+
+        onCancel: function () {
+            this.props.fluxActions.cancelEditUser();
+        },
+
+        render: function () {
+            return form(
+                {onSubmit: this.onSubmit},
+                div({className: "form-group"},
+                    label(null, "E-mail"),
+                    input({type: "text", className: "form-control", valueLink: this.linkState("email")})),
+                div({className: "form-group"},
+                    label(null, "Name"),
+                    input({type: "text", className: "form-control", valueLink: this.linkState("name")})),
+                div({className: "form-group"},
+                    label(null, "Zip code"),
+                    input({type: "text", className: "form-control", valueLink: this.linkState("zip")})),
+                div({className: "form-group"},
+                    label(null, "City"),
+                    input({type: "text", className: "form-control", valueLink: this.linkState("city")})),
+                input({type: "submit", value: "Update user", className: "btn btn-primary"}),
+                " ",
+                a({className: "btn btn-default", onClick: this.onCancel}, "Cancel"))
+        }
+    });
+    var EditUserForm = React.createFactory(EditUserFormClass);
 
     var UsersAppClass = React.createClass({
         mixin: [FluxRootComponentMixin],
+
+        getUserFormComponent: function () {
+            switch (this.props.fluxStore.getCurrentUserForm()) {
+            case "new":
+                return CreateUserForm({fluxActions: this.props.fluxActions});
+            case "edit":
+                return EditUserForm({fluxActions: this.props.fluxActions, user: this.props.fluxStore.getUserToEdit()});
+            case "changePassword":
+                return div(null, "change password!");
+            }
+        },
 
         render: function () {
             return div(
                 {className: "row"},
                 div({className: "col-md-9"}, UserList({fluxActions: this.props.fluxActions, users: this.props.fluxStore.getUsers()})),
-                div({className: "col-md-3"}, UserForm({fluxActions: this.props.fluxActions})));
+                div({className: "col-md-3"}, this.getUserFormComponent()));
         }
     });
     var UsersApp = React.createFactory(UsersAppClass);

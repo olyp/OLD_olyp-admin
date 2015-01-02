@@ -2,6 +2,8 @@
     function usersStoreFactory() {
         var usersAppInst;
         var users = [];
+        var currentUserForm = "new";
+        var userToEdit = null;
 
         return {
             setUsersAppInst: function (inst) {
@@ -15,6 +17,30 @@
 
             getUsers: function () {
                 return users;
+            },
+
+            getCurrentUserForm: function () {
+                return currentUserForm;
+            },
+
+            editUser: function (user) {
+                currentUserForm = "edit";
+                userToEdit = user;
+                usersAppInst.forceUpdate();
+            },
+
+            getUserToEdit: function () {
+                return userToEdit;
+            },
+
+            showNewUserForm: function () {
+                currentUserForm = "new";
+                usersAppInst.forceUpdate();
+            },
+
+            changeUserPassword: function (user) {
+                currentUserForm = "changePassword";
+                usersAppInst.forceUpdate();
             }
         };
     }

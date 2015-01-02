@@ -48,7 +48,28 @@
             },
 
             editUser: function (user) {
-                console.log(user);
+                fluxStore.editUser(user);
+            },
+
+            cancelEditUser: function () {
+                fluxStore.showNewUserForm();
+            },
+
+            updateUser: function (user, userData) {
+                apiUtils.updateUser(user.id, userData).then(
+                    function () {
+                        fluxStore.showNewUserForm();
+                        fetchUsers();
+                    },
+                    function (e) {
+                        alert("An unknown error occurred: " + JSON.stringify(e));
+                    }
+                );
+                console.log(user, userData);
+            },
+
+            changeUserPassword: function (user) {
+                fluxStore.changeUserPassword(user);
             },
 
             deleteUser: function (user) {

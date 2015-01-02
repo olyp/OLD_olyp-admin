@@ -17,6 +17,10 @@
             return http("POST", "/central_api_proxy/users", userData);
         },
 
+        updateUser: function (userId, userData) {
+            return http("PUT", "/central_api_proxy/users/" + userId, userData);
+        },
+
         deleteUser: function (userId) {
             return http("DELETE", "/central_api_proxy/users/" + userId);
         }
