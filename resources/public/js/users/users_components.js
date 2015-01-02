@@ -47,9 +47,6 @@
                     a({className: "btn btn-default btn-xs", onClick: this.onEditUserClicked},
                       "Edit"),
                     " ",
-                    a({className: "btn btn-default btn-xs", onClick: this.onDeleteUserClicked},
-                      "Delete"),
-                    " ",
                     a({className: "btn btn-default btn-xs", onClick: this.onChangePasswordClicked},
                       "Change password")));
         }
