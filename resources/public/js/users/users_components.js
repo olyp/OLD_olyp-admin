@@ -8,14 +8,14 @@
 
     var FluxRootComponentMixin = {
         propTypes: {
-            fluxActions: React.PropTypes.object.required,
-            fluxStore: React.PropTypes.object.required
+            fluxActions: React.PropTypes.object.isRequired,
+            fluxStore: React.PropTypes.object.isRequired
         }
     };
 
     var FluxChildComponentMixin = {
         propTypes: {
-            // fluxActions: React.PropTypes.object.required
+            fluxActions: React.PropTypes.object.isRequired
         }
     };
 
@@ -92,11 +92,19 @@
                     label(null, "Name"),
                     input({type: "text", className: "form-control", valueLink: this.linkState("name")})),
                 div({className: "form-group"},
-                    label(null, "Zip code"),
-                    input({type: "text", className: "form-control", valueLink: this.linkState("zip")})),
-                div({className: "form-group"},
-                    label(null, "City"),
-                    input({type: "text", className: "form-control", valueLink: this.linkState("city")})),
+                    label(null, "Contract"),
+                    React.DOM.select(
+                        {className: "form-control", valueLink: this.linkState("contract_id")},
+                        React.DOM.option(),
+                        this.props.contracts.map(function (contract) {
+                            return React.DOM.option(
+                                {
+                                    key: "contract-" + contract.id,
+                                    value: contract.id
+                                },
+                                contract.name);
+                        })
+                    )),
                 div({className: "form-group"},
                     label(null, "Password"),
                     " ",
@@ -116,9 +124,8 @@
             return {
                 email: this.props.user.email,
                 name: this.props.user.name,
-                zip: this.props.user.zip,
-                city: this.props.user.city,
-                version: this.props.user.version
+                version: this.props.user.version,
+                contract_id: this.props.user.contract_id
             };
         },
 
@@ -141,11 +148,19 @@
                     label(null, "Name"),
                     input({type: "text", className: "form-control", valueLink: this.linkState("name")})),
                 div({className: "form-group"},
-                    label(null, "Zip code"),
-                    input({type: "text", className: "form-control", valueLink: this.linkState("zip")})),
-                div({className: "form-group"},
-                    label(null, "City"),
-                    input({type: "text", className: "form-control", valueLink: this.linkState("city")})),
+                    label(null, "Contract"),
+                    React.DOM.select(
+                        {className: "form-control", valueLink: this.linkState("contract_id")},
+                        React.DOM.option(),
+                        this.props.contracts.map(function (contract) {
+                            return React.DOM.option(
+                                {
+                                    key: "contract-" + contract.id,
+                                    value: contract.id
+                                },
+                                contract.name);
+                        })
+                    )),
                 input({type: "submit", value: "Update user", className: "btn btn-primary"}),
                 " ",
                 a({className: "btn btn-default", onClick: this.onCancel}, "Cancel"))
@@ -196,9 +211,9 @@
         getUserFormComponent: function () {
             switch (this.props.fluxStore.getCurrentUserForm()) {
             case "new":
-                return CreateUserForm({fluxActions: this.props.fluxActions});
+                return CreateUserForm({fluxActions: this.props.fluxActions, contracts: this.props.fluxStore.getContracts()});
             case "edit":
-                return EditUserForm({fluxActions: this.props.fluxActions, user: this.props.fluxStore.getUserToEdit()});
+                return EditUserForm({fluxActions: this.props.fluxActions, user: this.props.fluxStore.getUserToEdit(), contracts: this.props.fluxStore.getContracts()});
             case "changePassword":
                 return ChangeUserPasswordForm({fluxActions: this.props.fluxActions, user: this.props.fluxStore.getUserToEdit()});
             }

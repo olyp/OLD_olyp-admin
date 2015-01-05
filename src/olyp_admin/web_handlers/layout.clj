@@ -16,5 +16,6 @@
       [:div.navbar-header
        [:span.navbar-brand "Olyp Admin"]]
       [:ul.nav.navbar-nav
-       [:li [:a {:href "/users"} "Users"]]]]]
+       [:li [:a {:href "/users"} "Users"]]
+       [:li [:a {:href "/contracts"} "Contracts"]]]]]
     [:div {:class "container-fluid"} contents]]))

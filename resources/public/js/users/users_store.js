@@ -1,11 +1,15 @@
 (function (GLOBAL) {
-    function usersStoreFactory() {
+    function usersStoreFactory(contracts) {
         var usersAppInst;
         var users = [];
         var currentUserForm = "new";
         var userToEdit = null;
 
         return {
+            getContracts: function () {
+                return contracts;
+            },
+
             setUsersAppInst: function (inst) {
                 usersAppInst = inst;
             },
