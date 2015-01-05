@@ -13,10 +13,26 @@
             return http("GET", "/central_api_proxy/contracts");
         },
         createItem: function (data) {
-            return http("POST", "/central_api_proxy/contracts", data);
+            var ourData = JSON.parse(JSON.stringify(data));
+            delete ourData.type;
+
+            switch (data.type) {
+            case "company":
+                return http("POST", "/central_api_proxy/company_contracts", ourData);
+            case "person":
+                return http("POST", "/central_api_proxy/person_contracts", ourData);
+            }
         },
         updateItem: function (id, data) {
-            return http("PUT", "/central_api_proxy/contracts/" + id, data);
+            var ourData = JSON.parse(JSON.stringify(data));
+            delete ourData.type;
+
+            switch (data.type) {
+            case "company":
+                return http("PUT", "/central_api_proxy/company_contracts/" + id, ourData);
+            case "person":
+                return http("PUT", "/central_api_proxy/person_contracts/" + id, ourData);
+            }
         }
     };
 

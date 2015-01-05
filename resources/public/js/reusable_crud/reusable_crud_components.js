@@ -23,10 +23,6 @@
             crudFluxActions: React.PropTypes.object.isRequired,
         },
 
-        getInitialState: function () {
-            return {};
-        },
-
         onSubmit: function (e) {
             e.preventDefault();
             this.props.crudFluxActions.newFormSubmitted(this.state);
@@ -38,17 +34,6 @@
             crudFluxActions: React.PropTypes.object.isRequired,
             crudItem: React.PropTypes.object.isRequired,
             crudItemId: React.PropTypes.any.isRequired
-        },
-
-        getInitialState: function () {
-            var state = {};
-
-            for (var key in this.props.crudItem) {
-                if (key === "id") continue;
-                state[key] = this.props.crudItem[key];
-            }
-
-            return state;
         },
 
         onSubmit: function (e) {
