@@ -87,6 +87,7 @@
                 });
             case "edit":
                 return this.props.editForm({
+                    key: "form-" + form.itemId,
                     crudFluxActions: this.props.crudFluxActions,
                     crudItem: form.item,
                     crudItemId: form.itemId
