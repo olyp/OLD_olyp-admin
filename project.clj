@@ -12,8 +12,9 @@
                  [olyp-app-utils "0.1.0-SNAPSHOT"]
                  [org.clojure/tools.logging "0.3.1"]
                  [ch.qos.logback/logback-classic "1.1.2"]]
-  :main olyp-admin.main
-  :profiles {:dev {:source-paths ["dev"]}
-             :uberjar {:source-paths ["prod"]}}
-  :plugins [[cider/cider-nrepl "0.7.0-SNAPSHOT"]]
-  :aot [olyp-admin.main])
+  :profiles {:dev {:source-paths ["dev"]
+                   :main olyp-admin.main-dev}
+             :uberjar {:source-paths ["prod"]
+                       :main olyp-admin.main-prod
+                       :aot [olyp-admin.main-prod]}}
+  :plugins [[cider/cider-nrepl "0.7.0-SNAPSHOT"]])
