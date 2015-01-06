@@ -92,17 +92,17 @@
                     label(null, "Name"),
                     input({type: "text", className: "form-control", valueLink: this.linkState("name")})),
                 div({className: "form-group"},
-                    label(null, "Contract"),
+                    label(null, "Customer"),
                     React.DOM.select(
-                        {className: "form-control", valueLink: this.linkState("contract_id")},
+                        {className: "form-control", valueLink: this.linkState("customer_id")},
                         React.DOM.option(),
-                        this.props.contracts.map(function (contract) {
+                        this.props.customers.map(function (customer) {
                             return React.DOM.option(
                                 {
-                                    key: "contract-" + contract.id,
-                                    value: contract.id
+                                    key: "customer-" + customer.id,
+                                    value: customer.id
                                 },
-                                contract.name);
+                                customer.name);
                         })
                     )),
                 div({className: "form-group"},
@@ -125,7 +125,7 @@
                 email: this.props.user.email,
                 name: this.props.user.name,
                 version: this.props.user.version,
-                contract_id: this.props.user.contract_id
+                customer_id: this.props.user.customer_id
             };
         },
 
@@ -148,17 +148,17 @@
                     label(null, "Name"),
                     input({type: "text", className: "form-control", valueLink: this.linkState("name")})),
                 div({className: "form-group"},
-                    label(null, "Contract"),
+                    label(null, "Customer"),
                     React.DOM.select(
-                        {className: "form-control", valueLink: this.linkState("contract_id")},
+                        {className: "form-control", valueLink: this.linkState("customer_id")},
                         React.DOM.option(),
-                        this.props.contracts.map(function (contract) {
+                        this.props.customers.map(function (customer) {
                             return React.DOM.option(
                                 {
-                                    key: "contract-" + contract.id,
-                                    value: contract.id
+                                    key: "customer-" + customer.id,
+                                    value: customer.id
                                 },
-                                contract.name);
+                                customer.name);
                         })
                     )),
                 input({type: "submit", value: "Update user", className: "btn btn-primary"}),
@@ -211,9 +211,9 @@
         getUserFormComponent: function () {
             switch (this.props.fluxStore.getCurrentUserForm()) {
             case "new":
-                return CreateUserForm({fluxActions: this.props.fluxActions, contracts: this.props.fluxStore.getContracts()});
+                return CreateUserForm({fluxActions: this.props.fluxActions, customers: this.props.fluxStore.getCustomers()});
             case "edit":
-                return EditUserForm({fluxActions: this.props.fluxActions, user: this.props.fluxStore.getUserToEdit(), contracts: this.props.fluxStore.getContracts()});
+                return EditUserForm({fluxActions: this.props.fluxActions, user: this.props.fluxStore.getUserToEdit(), customers: this.props.fluxStore.getCustomers()});
             case "changePassword":
                 return ChangeUserPasswordForm({fluxActions: this.props.fluxActions, user: this.props.fluxStore.getUserToEdit()});
             }

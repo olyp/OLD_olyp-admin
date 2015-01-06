@@ -30,7 +30,7 @@
         }
     };
 
-    http("GET", "/central_api_proxy/contracts").then(function (res) {
+    http("GET", "/central_api_proxy/customers").then(function (res) {
         var fluxStore = USERS_STORE_FACTORY(res);
         var fluxActions = USERS_ACTIONS_FACTORY(fluxStore, apiUtils);
 
