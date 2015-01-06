@@ -3,8 +3,6 @@
   (:require olyp-admin.app
             [com.stuartsierra.component :as component]))
 
-(declare app)
-
 (defn -main [& args]
   (->>
    {:olyp-central-api {:url "http://localhost:3000"}
@@ -12,6 +10,5 @@
     :env :dev
     :cookie-secret "12345678abcdef12"}
    olyp-admin.app/create-system
-   component/start
-   (def app)))
+   component/start))
 
