@@ -9,7 +9,7 @@
             ring.middleware.session.cookie
             ring.middleware.params
             [olyp-admin.web-handlers.users-handler :as users-handler]
-            [olyp-admin.web-handlers.contracts-handler :as contracts-handler]
+            [olyp-admin.web-handlers.customers-handler :as customers-handler]
             [olyp-admin.web-handlers.central-api-proxy-handler :as central-api-proxy-handler])
   (:import [java.util.concurrent TimeUnit]))
 
@@ -45,8 +45,8 @@
                                             "/js/users/users_store.js"
                                             "/js/users/users_actions.js"
                                             "/js/users/users.js"])
-   (assets/load-bundle "public" "contracts.js" ["/js/contracts/contracts_components.js"
-                                                "/js/contracts/contracts.js"])))
+   (assets/load-bundle "public" "customers.js" ["/js/customers/customers_components.js"
+                                                "/js/customers/customers.js"])))
 
 (defn get-assets [env]
   (if (= :dev env)
@@ -73,7 +73,7 @@
    [""
     {"/" {:get (fn [req] {:status 302 :headers {"Location" "/users"}})}
      "/users" {:get #'users-handler/users-page}
-     "/contracts" {:get #'contracts-handler/contracts-page}
+     "/customers" {:get #'customers-handler/customers-page}
      "/central_api_proxy" {[[#".*" :path] ""] central-api-proxy-handler/central-api-proxy}}]))
 
 (defn create-actual-handler [olyp-central-api-client-ctx cookie-secret]

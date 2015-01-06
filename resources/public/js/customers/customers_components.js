@@ -56,7 +56,7 @@
     }
 
 
-    var CreateContractFormClass = React.createClass({
+    var CreateCustomerFormClass = React.createClass({
         mixins: [React.addons.LinkedStateMixin, REUSABLE_CRUD_COMPONENTS.CrudNewFormLinkedStateMixin],
 
         getInitialState: function () {
@@ -74,41 +74,41 @@
                 {onSubmit: this.onSubmit},
                 div(null,
                     label({className: "radio-inline"},
-                          input({type: "radio", onChange: this.onTypeChange, checked: this.state.type === "company", value: "company", name: "contractType"}),
+                          input({type: "radio", onChange: this.onTypeChange, checked: this.state.type === "company", value: "company", name: "customerType"}),
                           "Company"),
                     label({className: "radio-inline"},
-                          input({type: "radio", onChange: this.onTypeChange, checked: this.state.type === "person", value: "person", name: "contractType"}),
+                          input({type: "radio", onChange: this.onTypeChange, checked: this.state.type === "person", value: "person", name: "customerType"}),
                           "Person")),
                 div({className: "form-group"},
                     label(null, "Name"),
                     input({type: "text", className: "form-control", valueLink: this.linkState("name")})),
                 getFieldsBasedOnType.call(this, this.state.type),
-                input({type: "submit", value: "Create contract", className: "btn btn-primary"}))
+                input({type: "submit", value: "Create customer", className: "btn btn-primary"}))
         }
     });
-    var CreateContractForm = React.createFactory(CreateContractFormClass);
+    var CreateCustomerForm = React.createFactory(CreateCustomerFormClass);
 
-    var EditContractFormClass = React.createClass({
+    var EditCustomerFormClass = React.createClass({
         mixins: [React.addons.LinkedStateMixin, REUSABLE_CRUD_COMPONENTS.CrudEditFormLinkedStateMixin],
 
         getInitialState: function () {
-            var contract = this.props.crudItem;
+            var customer = this.props.crudItem;
             var fields = [];
 
-            if (contract.type === "company") {
+            if (customer.type === "company") {
                 fields = ["name", "brreg_id", "address", "zip", "city", "contact_person_name", "contact_person_email", "contact_person_phone"];
             }
 
-            if (contract.type === "person") {
+            if (customer.type === "person") {
                 fields = ["name", "address", "zip", "city", "contact_person_email", "contact_person_phone"];
             }
 
             var state = {};
-            state.type = contract.type;
-            state.version = contract.version;
+            state.type = customer.type;
+            state.version = customer.version;
 
             fields.forEach(function (field) {
-                state[field] = contract[field];
+                state[field] = customer[field];
             });
 
             return state;
@@ -125,24 +125,24 @@
                     label(null, "Name"),
                     input({type: "text", className: "form-control", valueLink: this.linkState("name")})),
                 getFieldsBasedOnType.call(this, this.state.type),
-                input({type: "submit", value: "Update contract", className: "btn btn-primary"}),
+                input({type: "submit", value: "Update customer", className: "btn btn-primary"}),
                 " ",
                 a({className: "btn btn-default", onClick: this.onCancelClicked}, "Cancel"))
         }
     });
-    var EditContractForm = React.createFactory(EditContractFormClass);
+    var EditCustomerForm = React.createFactory(EditCustomerFormClass);
 
 
 
-    var ContractListItemClass = React.createClass({
-        displayName: "ContractListItem",
+    var CustomerListItemClass = React.createClass({
+        displayName: "CustomerListItem",
         mixins: [REUSABLE_CRUD_COMPONENTS.CrudListItemMixin],
 
         onEditClicked: function () {
             this.crudListItemEdit();
         },
 
-        getContractTypeIcon: function () {
+        getCustomerTypeIcon: function () {
             switch (this.props.crudListItem.type) {
             case "company":
                 return span({className: "glyphicon glyphicon-briefcase"});
@@ -152,41 +152,41 @@
         },
 
         render: function () {
-            var contract = this.props.crudListItem;
+            var customer = this.props.crudListItem;
 
             return div(
                 {className: "row"},
-                div({className: "col-md-2"}, contract.name),
-                div({className: "col-md-1"}, this.getContractTypeIcon()),
-                div({className: "col-md-2"}, contract.brreg_id),
+                div({className: "col-md-2"}, customer.name),
+                div({className: "col-md-1"}, this.getCustomerTypeIcon()),
+                div({className: "col-md-2"}, customer.brreg_id),
                 div({className: "col-md-3"},
                     a({className: "btn btn-default btn-xs", onClick: this.onEditClicked}, "Edit")))
         }
     });
-    var ContractListItem = React.createFactory(ContractListItemClass);
+    var CustomerListItem = React.createFactory(CustomerListItemClass);
 
-    var ContractsAppClass = React.createClass({
+    var CustomersAppClass = React.createClass({
         mixins: [REUSABLE_CRUD_COMPONENTS.CrudRootComponentMixin],
 
         render: function () {
             return div(
                 {className: "row"},
                 div({className: "col-md-9"}, REUSABLE_CRUD_COMPONENTS.CrudList({
-                    rowComponent: ContractListItem,
+                    rowComponent: CustomerListItem,
                     crudFluxStore: this.props.crudFluxStore,
                     crudFluxActions: this.props.crudFluxActions
                 })),
                 div({className: "col-md-3"}, REUSABLE_CRUD_COMPONENTS.CrudForm({
-                    newForm: CreateContractForm,
-                    editForm: EditContractForm,
+                    newForm: CreateCustomerForm,
+                    editForm: EditCustomerForm,
                     crudFluxStore: this.props.crudFluxStore,
                     crudFluxActions: this.props.crudFluxActions
                 })));
         }
     });
-    var ContractsApp = React.createFactory(ContractsAppClass);
+    var CustomersApp = React.createFactory(CustomersAppClass);
 
-    GLOBAL.CONTRACTS_COMPONENTS = {
-        ContractsApp: ContractsApp
+    GLOBAL.CUSTOMERS_COMPONENTS = {
+        CustomersApp: CustomersApp
     };
 }(this));

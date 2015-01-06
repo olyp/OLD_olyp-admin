@@ -10,7 +10,7 @@
 
     var apiUtils = {
         getAllItems: function () {
-            return http("GET", "/central_api_proxy/contracts");
+            return http("GET", "/central_api_proxy/customers");
         },
         createItem: function (data) {
             var ourData = JSON.parse(JSON.stringify(data));
@@ -18,9 +18,9 @@
 
             switch (data.type) {
             case "company":
-                return http("POST", "/central_api_proxy/company_contracts", ourData);
+                return http("POST", "/central_api_proxy/company_customers", ourData);
             case "person":
-                return http("POST", "/central_api_proxy/person_contracts", ourData);
+                return http("POST", "/central_api_proxy/person_customers", ourData);
             }
         },
         updateItem: function (id, data) {
@@ -29,9 +29,9 @@
 
             switch (data.type) {
             case "company":
-                return http("PUT", "/central_api_proxy/company_contracts/" + id, ourData);
+                return http("PUT", "/central_api_proxy/company_customers/" + id, ourData);
             case "person":
-                return http("PUT", "/central_api_proxy/person_contracts/" + id, ourData);
+                return http("PUT", "/central_api_proxy/person_customers/" + id, ourData);
             }
         }
     };
@@ -39,12 +39,12 @@
     var crudFluxStore = REUSABLE_CRUD_STORE_FACTORY();
     var crudFluxActions = REUSABLE_CRUD_ACTIONS_FACTORY(crudFluxStore, apiUtils);
 
-    var contractsAppInst = React.render(
-        CONTRACTS_COMPONENTS.ContractsApp({
+    var customersAppInst = React.render(
+        CUSTOMERS_COMPONENTS.CustomersApp({
             crudFluxStore: crudFluxStore,
             crudFluxActions: crudFluxActions
         }),
-        document.getElementById("contracts-app"));
+        document.getElementById("customers-app"));
 
-    crudFluxStore.setComponentInst(contractsAppInst);
+    crudFluxStore.setComponentInst(customersAppInst);
 }());
