@@ -193,8 +193,8 @@
                 loadingIndicatorEl.style.display = "none";
             },
             function (err) {
-                // alert("An unknown error occurred: " + err);
-                // loadingIndicatorEl.style.display = "none";
+                alert("An unknown error occurred: " + err);
+                loadingIndicatorEl.style.display = "none";
             }
         );
     });
