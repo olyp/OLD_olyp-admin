@@ -1,4 +1,4 @@
-(function (GLOBAL) {
+var USER_COMPONENTS = (function () {
     var div = React.DOM.div;
     var form = React.DOM.form;
     var input = React.DOM.input;
@@ -6,32 +6,26 @@
     var a = React.DOM.a;
     var p = React.DOM.p;
 
-    var FluxRootComponentMixin = {
-        propTypes: {
-            fluxActions: React.PropTypes.object.isRequired,
-            fluxStore: React.PropTypes.object.isRequired
-        }
-    };
-
     var FluxChildComponentMixin = {
         propTypes: {
-            fluxActions: React.PropTypes.object.isRequired
+            actions: React.PropTypes.object.isRequired
         }
     };
 
     var UserListItemClass = React.createClass({
         mixins: [FluxChildComponentMixin],
+        displayName: "UserListItem",
 
         onEditUserClicked: function () {
-            this.props.fluxActions.showFormForEditUser(this.props.user);
+            this.props.actions.userActions.showFormForEditUser(this.props.user);
         },
 
         onDeleteUserClicked: function () {
-            this.props.fluxActions.deleteUser(this.props.user);
+            this.props.actions.userActions.deleteUser(this.props.user);
         },
 
         onChangePasswordClicked: function () {
-            this.props.fluxActions.showFormForChangeUserPassword(this.props.user);
+            this.props.actions.userActions.showFormForChangeUserPassword(this.props.user);
         },
 
         render: function () {
@@ -55,18 +49,24 @@
 
     var UserListClass = React.createClass({
         mixins: [FluxChildComponentMixin],
+        displayName: "UserList",
+
+        onCreateUser: function () {
+            this.props.actions.userActions.showFormForCreateUser();
+        },
 
         render: function () {
             return div(
                 null,
+                p(null, a({className: "btn btn-default", onClick: this.onCreateUser}, "Create user")),
                 this.props.users.map(function (user) {
-                    return UserListItem({key: "user-" + user.id, fluxActions: this.props.fluxActions, user: user});
+                    return UserListItem({key: "user-" + user.id, actions: this.props.actions, user: user});
                 }.bind(this)))
         }
     });
     var UserList = React.createFactory(UserListClass);
 
-    var CreateUserFormClass = React.createClass({
+    var NewUserFormClass = React.createClass({
         mixins: [FluxChildComponentMixin, React.addons.LinkedStateMixin],
 
         getInitialState: function () {
@@ -75,11 +75,11 @@
 
         onSubmit: function (e) {
             e.preventDefault();
-            this.props.fluxActions.createUser(this.state);
+            this.props.actions.userActions.createUser(this.state);
         },
 
         generatePassword: function () {
-            this.setState({password: this.props.fluxActions.generateRandomPassword()})
+            this.setState({password: this.props.passwordStore.generateRandomPassword()})
         },
 
         render: function () {
@@ -114,11 +114,17 @@
                 input({type: "submit", value: "Create user", className: "btn btn-primary"}));
         }
     });
-    var CreateUserForm = React.createFactory(CreateUserFormClass);
+    var NewUserForm = React.createFactory(NewUserFormClass);
 
 
     var EditUserFormClass = React.createClass({
         mixins: [FluxChildComponentMixin, React.addons.LinkedStateMixin],
+        displayName: "EditUserForm",
+
+        propTypes: {
+            user: React.PropTypes.object.isRequired,
+            customers: React.PropTypes.array.isRequired
+        },
 
         getInitialState: function () {
             return {
@@ -131,11 +137,11 @@
 
         onSubmit: function (e) {
             e.preventDefault();
-            this.props.fluxActions.updateUser(this.props.user, this.state);
+            this.props.actions.userActions.updateUser(this.props.user, this.state);
         },
 
         onCancel: function () {
-            this.props.fluxActions.cancelEditUser();
+            this.props.actions.userActions.cancelEditUser();
         },
 
         render: function () {
@@ -177,15 +183,15 @@
 
         onSubmit: function (e) {
             e.preventDefault();
-            this.props.fluxActions.changeUserPassword(this.props.user, this.state.password);
+            this.props.actions.userActions.changeUserPassword(this.props.user, this.state.password);
         },
 
         onCancel: function () {
-            this.props.fluxActions.cancelEditUser();
+            this.props.actions.userActions.cancelEditUser();
         },
 
         generatePassword: function () {
-            this.setState({password: this.props.fluxActions.generateRandomPassword()})
+            this.setState({password: this.props.passwordStore.generateRandomPassword()})
         },
 
         render: function () {
@@ -205,30 +211,10 @@
     });
     var ChangeUserPasswordForm = React.createFactory(ChangeUserPasswordFormClass);
 
-    var UsersAppClass = React.createClass({
-        mixin: [FluxRootComponentMixin],
-
-        getUserFormComponent: function () {
-            switch (this.props.fluxStore.getCurrentUserForm()) {
-            case "new":
-                return CreateUserForm({fluxActions: this.props.fluxActions, customers: this.props.fluxStore.getCustomers()});
-            case "edit":
-                return EditUserForm({fluxActions: this.props.fluxActions, user: this.props.fluxStore.getUserToEdit(), customers: this.props.fluxStore.getCustomers()});
-            case "changePassword":
-                return ChangeUserPasswordForm({fluxActions: this.props.fluxActions, user: this.props.fluxStore.getUserToEdit()});
-            }
-        },
-
-        render: function () {
-            return div(
-                {className: "row"},
-                div({className: "col-md-9"}, UserList({fluxActions: this.props.fluxActions, users: this.props.fluxStore.getUsers()})),
-                div({className: "col-md-3"}, this.getUserFormComponent()));
-        }
-    });
-    var UsersApp = React.createFactory(UsersAppClass);
-
-    GLOBAL.USERS_COMPONENTS = {
-        UsersApp: UsersApp
+    return {
+        UserList: UserList,
+        NewUserForm: NewUserForm,
+        EditUserForm: EditUserForm,
+        ChangeUserPasswordForm: ChangeUserPasswordForm
     };
-}(this));
+}());

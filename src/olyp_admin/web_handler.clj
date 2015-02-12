@@ -8,8 +8,7 @@
             ring.middleware.session
             ring.middleware.session.cookie
             ring.middleware.params
-            [olyp-admin.web-handlers.users-handler :as users-handler]
-            [olyp-admin.web-handlers.customers-handler :as customers-handler]
+            [olyp-admin.web-handlers.home-handler :as home-handler]
             [olyp-admin.web-handlers.central-api-proxy-handler :as central-api-proxy-handler])
   (:import [java.util.concurrent TimeUnit]))
 
@@ -34,19 +33,26 @@
 (defn get-optimizable-assets []
   (concat
    (assets/load-bundle "public" "lib.js" ["/js/lib/when-3.6.4.js"
+                                          "/js/lib/react-router-0.11.6.js"
                                           "/js/olyp_app_utils/http.js"])
-   (assets/load-bundle "public" "reusable_crud.js" ["/js/reusable_crud/reusable_crud_components.js"
-                                                    "/js/reusable_crud/reusable_crud_actions.js"
-                                                    "/js/reusable_crud/reusable_crud_store.js"])
+   ;; (assets/load-bundle "public" "reusable_crud.js" ["/js/reusable_crud/reusable_crud_components.js"
+   ;;                                                  "/js/reusable_crud/reusable_crud_actions.js"
+   ;;                                                  "/js/reusable_crud/reusable_crud_store.js"])
    (assets/load-bundle "public" "app.css" ["/bootstrap/css/bootstrap.css"
                                            "/bootstrap/css/bootstrap-theme.css"
                                            "/css/app.css"])
-   (assets/load-bundle "public" "users.js" ["/js/users/users_components.js"
-                                            "/js/users/users_store.js"
-                                            "/js/users/users_actions.js"
-                                            "/js/users/users.js"])
-   (assets/load-bundle "public" "customers.js" ["/js/customers/customers_components.js"
-                                                "/js/customers/customers.js"])))
+   ;; (assets/load-bundle "public" "users.js" ["/js/users/users_components.js"
+   ;;                                          "/js/users/users_store.js"
+   ;;                                          "/js/users/users_actions.js"
+   ;;                                          "/js/users/users.js"])
+   ;; (assets/load-bundle "public" "customers.js" ["/js/customers/customers_components.js"
+   ;;                                              "/js/customers/customers.js"])
+   (assets/load-bundle "public" "app.js" ["/js/stores/user_store.js"
+                                          "/js/stores/customer_store.js"
+                                          "/js/stores/password_store.js"
+                                          "/js/components/user_components.js"
+                                          "/js/actions/user_actions.js"
+                                          "/js/app.js"])))
 
 (defn get-assets [env]
   (if (= :dev env)
@@ -71,9 +77,7 @@
 (def app-handler
   (bidi.ring/make-handler
    [""
-    {"/" {:get (fn [req] {:status 302 :headers {"Location" "/users"}})}
-     "/users" {:get #'users-handler/users-page}
-     "/customers" {:get #'customers-handler/customers-page}
+    {"/" {:get #'home-handler/home-page}
      "/central_api_proxy" {[[#".*" :path] ""] central-api-proxy-handler/central-api-proxy}}]))
 
 (defn create-actual-handler [olyp-central-api-client-ctx cookie-secret]
