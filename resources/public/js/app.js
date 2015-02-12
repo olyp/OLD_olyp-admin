@@ -3,7 +3,7 @@
     var Route = React.createFactory(Router.Route);
     var RouteHandler = React.createFactory(Router.RouteHandler);
     var DefaultRoute = React.createFactory(Router.DefaultRoute);
-    var Link = React.createFactory(Router.Link);
+    var Redirect = React.createFactory(Router.Redirect);
 
     var CSRF_TOKEN = (function () {
         var token = document.querySelector("meta[name=csrf-token]");
@@ -11,6 +11,41 @@
         throw new Error("Unable to find CSRF token!");
     }());
     var http = OLYP_HTTP_FACTORY(CSRF_TOKEN)
+
+    var NavbarLinkClass = React.createClass({
+        mixins: [Router.Navigation, Router.State],
+        propTypes: {
+            to: React.PropTypes.string.isRequired
+        },
+
+        onClick: function (e) {
+            e.preventDefault();
+            this.transitionTo(this.props.to, this.props.params, this.props.query);
+        },
+
+        render: function () {
+            var liClassNames = [];
+            if (this.isActive(this.props.to, this.props.params, this.props.query)) {
+                liClassNames.push("active");
+            }
+
+            return React.DOM.li(
+                {className: liClassNames.join(" ")},
+                React.DOM.a(
+                    {
+                        onClick: this.onClick,
+                        href: this.makeHref(this.props.to, this.props.params, this.props.query)
+                    },
+                    this.props.children));
+        }
+    });
+    var NavbarLink = React.createFactory(NavbarLinkClass);
+
+    var UsersHandlerClass = React.createClass({
+        render: function () {
+            return React.DOM.div({className: "users-app"}, RouteHandler(this.props));
+        }
+    });
 
     var IndexHandlerClass = React.createClass({
         render: function () {
@@ -25,15 +60,15 @@
                             React.DOM.span({className: "navbar-brand"}, "Olyp Admin")),
                         React.DOM.ul(
                             {className: "nav navbar-nav"},
-                            React.DOM.li(null, Link({to: "users"}, "Users")),
-                            React.DOM.li(null, Link({to: "customers"}, "Customers"))))),
+                            NavbarLink({to: "users"}, "Users"),
+                            NavbarLink({to: "customers"}, "Customers")))),
                 React.DOM.div(
                     {className: "container-fluid"},
                     RouteHandler(this.props)));
         }
     });
 
-    var UsersHandlerClass = React.createClass({
+    var UsersIndexHandlerClass = React.createClass({
         statics: {
             fetchData: function (stores, state) {
                 return {
@@ -133,11 +168,13 @@
     var router = Router.create({
         routes: [
             Route({name: "index", path: "/", handler: IndexHandlerClass},
-                  Route({name: "customers", handler: CustomersHandlerClass}),
-                  Route({name: "userNew", path: "/users/new", handler: UserNewHandlerClass}),
-                  Route({name: "userEdit", path: "/users/:userId", handler: UserEditHandlerClass}),
-                  Route({name: "userChangePassword", path: "/users/:userId/password", handler: UserChangePasswordHandlerClass}),
-                  DefaultRoute({name: "users", handler: UsersHandlerClass}))
+                  Redirect({from: "/", to: "users"}),
+                  Route({name: "users", path: "/users", handler: UsersHandlerClass},
+                        DefaultRoute({name: "usersIndex", handler: UsersIndexHandlerClass}),
+                        Route({name: "userNew", path: "/users/new", handler: UserNewHandlerClass}),
+                        Route({name: "userEdit", path: "/users/:userId", handler: UserEditHandlerClass}),
+                        Route({name: "userChangePassword", path: "/users/:userId/password", handler: UserChangePasswordHandlerClass})),
+                  Route({name: "customers", handler: CustomersHandlerClass}))
         ]
     });
 
