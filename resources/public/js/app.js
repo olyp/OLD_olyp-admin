@@ -41,9 +41,9 @@
     });
     var NavbarLink = React.createFactory(NavbarLinkClass);
 
-    var UsersHandlerClass = React.createClass({
+    var GenericIndexHandlerClass = React.createClass({
         render: function () {
-            return React.DOM.div({className: "users-app"}, RouteHandler(this.props));
+            return React.DOM.div(null, RouteHandler(this.props));
         }
     });
 
@@ -61,7 +61,8 @@
                         React.DOM.ul(
                             {className: "nav navbar-nav"},
                             NavbarLink({to: "users"}, "Users"),
-                            NavbarLink({to: "customers"}, "Customers")))),
+                            NavbarLink({to: "customers"}, "Customers"),
+                            NavbarLink({to: "monthlyRentals"}, "Monthly rentals")))),
                 React.DOM.div(
                     {className: "container-fluid"},
                     RouteHandler(this.props)));
@@ -89,7 +90,7 @@
         statics: {
             fetchData: function (stores, state) {
                 return {
-                    customers: stores.customersStore.getAllCustomers()
+                    customers: stores.customerStore.getAllCustomers()
                 };
             }
         },
@@ -108,7 +109,7 @@
             fetchData: function (stores, state) {
                 return {
                     user: stores.userStore.getUser(state.params.userId),
-                    customers: stores.customersStore.getAllCustomers()
+                    customers: stores.customerStore.getAllCustomers()
                 };
             }
         },
@@ -146,6 +147,29 @@
         }
     });
 
+    var MonthlyRentalsIndexHandlerClass = React.createClass({
+        statics: {
+            fetchData: function (stores, state) {
+                return {
+                    customersById: stores.customerStore.getAllCustomersById(),
+                    usersById: stores.userStore.getAllUsersById(),
+                    monthlyRentalRooms: stores.monthlyRentalStore.getAllMonthlyRentalRooms(),
+                    monthlyRentalsByRoom: stores.monthlyRentalStore.getMonthlyRentalsByRoom()
+                };
+            }
+        },
+
+        render: function () {
+            return MONTHLY_RENTAL_COMPONENTS.MonthlyRentalOverview({
+                customersById: this.props.fetchedData.customersById,
+                usersById: this.props.fetchedData.usersById,
+                monthlyRentalRooms: this.props.fetchedData.monthlyRentalRooms,
+                monthlyRentalsByRoom: this.props.fetchedData.monthlyRentalsByRoom,
+                totalMonthlyPrice: this.props.stores.monthlyRentalStore.getTotalMonthlyPrice()
+            });
+        }
+    });
+
 
 
     var target = document.getElementById("olyp-admin-app");
@@ -169,19 +193,22 @@
         routes: [
             Route({name: "index", path: "/", handler: IndexHandlerClass},
                   Redirect({from: "/", to: "users"}),
-                  Route({name: "users", path: "/users", handler: UsersHandlerClass},
+                  Route({name: "users", path: "/users", handler: GenericIndexHandlerClass},
                         DefaultRoute({name: "usersIndex", handler: UsersIndexHandlerClass}),
                         Route({name: "userNew", path: "/users/new", handler: UserNewHandlerClass}),
                         Route({name: "userEdit", path: "/users/:userId", handler: UserEditHandlerClass}),
                         Route({name: "userChangePassword", path: "/users/:userId/password", handler: UserChangePasswordHandlerClass})),
-                  Route({name: "customers", handler: CustomersHandlerClass}))
+                  Route({name: "customers", handler: CustomersHandlerClass}),
+                  Route({name: "monthlyRentals", path: "/monthly_rentals", handler: GenericIndexHandlerClass},
+                        DefaultRoute({name: "monthlyRentalsIndex", handler: MonthlyRentalsIndexHandlerClass})))
         ]
     });
 
     var stores = {
         userStore: USER_STORE.create(http),
-        customersStore: CUSTOMER_STORE.create(http),
-        passwordStore: PASSWORD_STORE.create()
+        customerStore: CUSTOMER_STORE.create(http),
+        passwordStore: PASSWORD_STORE.create(),
+        monthlyRentalStore: MONTHLY_RENTAL_STORE.create(http)
     };
 
     var actions = {

@@ -47,10 +47,13 @@
    ;;                                          "/js/users/users.js"])
    ;; (assets/load-bundle "public" "customers.js" ["/js/customers/customers_components.js"
    ;;                                              "/js/customers/customers.js"])
-   (assets/load-bundle "public" "app.js" ["/js/stores/user_store.js"
+   (assets/load-bundle "public" "app.js" ["/js/stores/store_utils.js"
+                                          "/js/stores/user_store.js"
                                           "/js/stores/customer_store.js"
                                           "/js/stores/password_store.js"
+                                          "/js/stores/monthly_rental_store.js"
                                           "/js/components/user_components.js"
+                                          "/js/components/monthly_rental_components.js"
                                           "/js/actions/user_actions.js"
                                           "/js/app.js"])))
 

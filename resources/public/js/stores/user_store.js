@@ -5,6 +5,12 @@ var USER_STORE = (function () {
                 return http("GET", "/central_api_proxy/users");
             },
 
+            getAllUsersById: function () {
+                return STORE_UTILS.groupByUnique(
+                    http("GET", "/central_api_proxy/users"),
+                    function (user) { return user.id; });
+            },
+
             getUser: function (userId) {
                 return http("GET", "/central_api_proxy/users/" + userId);
             },
