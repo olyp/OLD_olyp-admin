@@ -53,8 +53,10 @@
                                           "/js/stores/password_store.js"
                                           "/js/stores/monthly_rental_store.js"
                                           "/js/components/user_components.js"
+                                          "/js/components/customer_components.js"
                                           "/js/components/monthly_rental_components.js"
                                           "/js/actions/user_actions.js"
+                                          "/js/actions/customer_actions.js"
                                           "/js/app.js"])))
 
 (defn get-assets [env]

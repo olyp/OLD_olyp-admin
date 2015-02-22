@@ -141,9 +141,62 @@
         }
     });
 
-    var CustomersHandlerClass = React.createClass({
+    var CustomersIndexHandlerClass = React.createClass({
+        statics: {
+            fetchData: function (stores, state) {
+                return {
+                    customers: stores.customerStore.getAllCustomers()
+                };
+            }
+        },
+
         render: function () {
-            return React.DOM.div(null, "Customers page!");
+            return CUSTOMER_COMPONENTS.CustomerList({
+                customers: this.props.fetchedData.customers,
+                actions: this.props.actions
+            });
+        }
+    });
+
+    var CustomerNewHandlerClass = React.createClass({
+        render: function () {
+            return CUSTOMER_COMPONENTS.NewCustomerForm({
+                actions: this.props.actions
+            });
+        }
+    });
+
+    var CompanyCustomerEditHandlerClass = React.createClass({
+        statics: {
+            fetchData: function (stores, state) {
+                return {
+                    customer: stores.customerStore.getCompanyCustomer(state.params.customerId),
+                };
+            }
+        },
+
+        render: function () {
+            return CUSTOMER_COMPONENTS.EditCompanyCustomerForm({
+                customer: this.props.fetchedData.customer,
+                actions: this.props.actions
+            });
+        }
+    });
+
+    var PersonCustomerEditHandlerClass = React.createClass({
+        statics: {
+            fetchData: function (stores, state) {
+                return {
+                    customer: stores.customerStore.getPersonCustomer(state.params.customerId),
+                };
+            }
+        },
+
+        render: function () {
+            return CUSTOMER_COMPONENTS.EditPersonCustomerForm({
+                customer: this.props.fetchedData.customer,
+                actions: this.props.actions
+            });
         }
     });
 
@@ -198,7 +251,11 @@
                         Route({name: "userNew", path: "/users/new", handler: UserNewHandlerClass}),
                         Route({name: "userEdit", path: "/users/:userId", handler: UserEditHandlerClass}),
                         Route({name: "userChangePassword", path: "/users/:userId/password", handler: UserChangePasswordHandlerClass})),
-                  Route({name: "customers", handler: CustomersHandlerClass}),
+                  Route({name: "customers", handler: GenericIndexHandlerClass},
+                        DefaultRoute({name: "customersIndex", handler: CustomersIndexHandlerClass}),
+                        Route({name: "customerNew", path: "/customers/new", handler: CustomerNewHandlerClass}),
+                        Route({name: "companyCustomerEdit", path: "/customers/company/:customerId", handler: CompanyCustomerEditHandlerClass}),
+                        Route({name: "personCustomerEdit", path: "/customers/person/:customerId", handler: PersonCustomerEditHandlerClass})),
                   Route({name: "monthlyRentals", path: "/monthly_rentals", handler: GenericIndexHandlerClass},
                         DefaultRoute({name: "monthlyRentalsIndex", handler: MonthlyRentalsIndexHandlerClass})))
         ]
@@ -212,7 +269,8 @@
     };
 
     var actions = {
-        userActions: USER_ACTIONS.create(router, stores.userStore)
+        userActions: USER_ACTIONS.create(router, stores.userStore),
+        customerActions: CUSTOMER_ACTIONS.create(router, stores.customerStore)
     };
 
     router.run(function (Handler, state) {

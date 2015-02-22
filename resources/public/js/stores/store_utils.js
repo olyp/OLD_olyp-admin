@@ -22,6 +22,25 @@ var STORE_UTILS = (function () {
 
                 return result;
             });
+        },
+
+        prettyErr: function (promise) {
+            return promise.then(
+                function (res) {
+                    return res;
+                },
+                function (err) {
+                    if (typeof err === "string") {
+                        return when.reject(err);
+                    }
+
+                    if (err.hasOwnProperty("xhr")) {
+                        return when.reject(err.status + ": " + err.body);
+                    }
+
+                    return when.reject(JSON.stringify(err));
+                }
+            )
         }
     }
 }());
