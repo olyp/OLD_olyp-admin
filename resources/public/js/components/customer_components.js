@@ -1,4 +1,9 @@
 var CUSTOMER_COMPONENTS = (function () {
+    var div = React.DOM.div;
+    var label = React.DOM.label;
+    var input = React.DOM.input;
+    var textarea = React.DOM.textarea;
+
     var CustomerListItemClass = React.createClass({
         displayName: "CustomerListItem",
 
@@ -31,9 +36,16 @@ var CUSTOMER_COMPONENTS = (function () {
     var CustomerListItem = React.createFactory(CustomerListItemClass);
 
     var CustomerListClass = React.createClass({
+        onCreateCustomer: function () {
+            this.props.actions.customerActions.showFormForCreateCustomer();
+        },
+
         render: function () {
             return React.DOM.div(
                 {},
+                React.DOM.p(
+                    null,
+                    React.DOM.button({className: "btn btn-default", onClick: this.onCreateCustomer}, "Create customer")),
                 this.props.customers.map(function (customer) {
                     return CustomerListItem({
                         key: "customer-" + customer.id,
@@ -45,8 +57,111 @@ var CUSTOMER_COMPONENTS = (function () {
     });
     var CustomerList = React.createFactory(CustomerListClass);
 
+    function getFieldsBasedOnType(type) {
+        if (type === "company") {
+            return div(
+                null,
+                div({className: "form-group"},
+                    label(null, "Brreg ID"),
+                    input({type: "text", className: "form-control", valueLink: this.linkState("brreg_id")})),
+                div({className: "form-group"},
+                    label(null, "Address"),
+                    textarea({type: "text", className: "form-control", valueLink: this.linkState("address")})),
+                div({className: "form-group"},
+                    label(null, "Zip code"),
+                    input({type: "text", className: "form-control", valueLink: this.linkState("zip")})),
+                div({className: "form-group"},
+                    label(null, "City"),
+                    input({type: "text", className: "form-control", valueLink: this.linkState("city")})),
+                div({className: "form-group"},
+                    label(null, "Room booking free hours"),
+                    input({type: "text", className: "form-control", valueLink: this.linkState("room_booking_free_hours")})),
+                div({className: "form-group"},
+                    label(null, "Room booking hourly price"),
+                    input({type: "text", className: "form-control", valueLink: this.linkState("room_booking_hourly_price")})),
+                div({className: "form-group"},
+                    label(null, "Contact person name"),
+                    input({type: "text", className: "form-control", valueLink: this.linkState("contact_person_name")})),
+                div({className: "form-group"},
+                    label(null, "Contact person e-mail"),
+                    input({type: "text", className: "form-control", valueLink: this.linkState("contact_person_email")})),
+                div({className: "form-group"},
+                    label(null, "Contact person phone"),
+                    input({type: "text", className: "form-control", valueLink: this.linkState("contact_person_phone")})));
+        }
+
+        if (type === "person") {
+            return div(
+                null,
+                div({className: "form-group"},
+                    label(null, "Address"),
+                    textarea({type: "text", className: "form-control", valueLink: this.linkState("address")})),
+                div({className: "form-group"},
+                    label(null, "Zip code"),
+                    input({type: "text", className: "form-control", valueLink: this.linkState("zip")})),
+                div({className: "form-group"},
+                    label(null, "City"),
+                    input({type: "text", className: "form-control", valueLink: this.linkState("city")})),
+                div({className: "form-group"},
+                    label(null, "E-mail"),
+                    input({type: "text", className: "form-control", valueLink: this.linkState("contact_person_email")})),
+                div({className: "form-group"},
+                    label(null, "Phone"),
+                    input({type: "text", className: "form-control", valueLink: this.linkState("contact_person_phone")})),
+                div({className: "form-group"},
+                    label(null, "Room booking free hours"),
+                    input({type: "text", className: "form-control", valueLink: this.linkState("room_booking_free_hours")})),
+                div({className: "form-group"},
+                    label(null, "Room booking hourly price"),
+                    input({type: "text", className: "form-control", valueLink: this.linkState("room_booking_hourly_price")})))
+        }
+    }
+
     var NewCustomerFormClass = React.createClass({
+        mixins: [React.addons.LinkedStateMixin],
+
+        getInitialState: function () {
+            return {
+                type: "company"
+            };
+        },
+
+        onTypeChange: function (e) {
+            this.setState({type: e.target.value});
+        },
+
+        onSubmit: function (e) {
+            e.preventDefault();
+            if (this.state.type === "company") {
+                this.props.actions.customerActions.createCompanyCustomer(this.state);
+                return
+            }
+
+            if (this.state.type === "person") {
+                this.props.actions.customerActions.createPersonCustomer(this.state);
+                return
+            }
+        },
+
         render: function () {
+            return React.DOM.form(
+                {onSubmit: this.onSubmit},
+                React.DOM.div(
+                    null,
+                    React.DOM.label(
+                        {className: "radio-inline"},
+                        React.DOM.input({type: "radio", onChange: this.onTypeChange, checked: this.state.type === "company", value: "company", name: "customerType"}),
+                        "Company"),
+                    React.DOM.label(
+                        {className: "radio-inline"},
+                        React.DOM.input({type: "radio", onChange: this.onTypeChange, checked: this.state.type === "person", value: "person", name: "customerType"}),
+                        "Person")),
+                React.DOM.div(
+                    {className: "form-group"},
+                    React.DOM.label(null, "Name"),
+                    React.DOM.input({type: "text", className: "form-control", valueLink: this.linkState("name")})),
+                getFieldsBasedOnType.call(this, this.state.type),
+                React.DOM.input({type: "submit", value: "Create customer", className: "btn btn-primary"}));
         }
     });
     var NewCustomerForm = React.createFactory(NewCustomerFormClass);
@@ -79,42 +194,7 @@ var CUSTOMER_COMPONENTS = (function () {
                     {className: "form-group"},
                     React.DOM.label(null, "Name"),
                     React.DOM.input({type: "text", className: "form-control", valueLink: this.linkState("name")})),
-                React.DOM.div(
-                    {className: "form-group"},
-                    React.DOM.label(null, "Brreg ID"),
-                    React.DOM.input({type: "text", className: "form-control", valueLink: this.linkState("brreg_id")})),
-                React.DOM.div(
-                    {className: "form-group"},
-                    React.DOM.label(null, "Address"),
-                    React.DOM.textarea({type: "text", className: "form-control", valueLink: this.linkState("address")})),
-                React.DOM.div(
-                    {className: "form-group"},
-                    React.DOM.label(null, "Zip code"),
-                    React.DOM.input({type: "text", className: "form-control", valueLink: this.linkState("zip")})),
-                React.DOM.div(
-                    {className: "form-group"},
-                    React.DOM.label(null, "City"),
-                    React.DOM.input({type: "text", className: "form-control", valueLink: this.linkState("city")})),
-                React.DOM.div(
-                    {className: "form-group"},
-                    React.DOM.label(null, "Room booking free hours"),
-                    React.DOM.input({type: "text", className: "form-control", valueLink: this.linkState("room_booking_free_hours")})),
-                React.DOM.div(
-                    {className: "form-group"},
-                    React.DOM.label(null, "Room booking hourly price"),
-                    React.DOM.input({type: "text", className: "form-control", valueLink: this.linkState("room_booking_hourly_price")})),
-                React.DOM.div(
-                    {className: "form-group"},
-                    React.DOM.label(null, "Contact person name"),
-                    React.DOM.input({type: "text", className: "form-control", valueLink: this.linkState("contact_person_name")})),
-                React.DOM.div(
-                    {className: "form-group"},
-                    React.DOM.label(null, "Contact person e-mail"),
-                    React.DOM.input({type: "text", className: "form-control", valueLink: this.linkState("contact_person_email")})),
-                React.DOM.div(
-                    {className: "form-group"},
-                    React.DOM.label(null, "Contact person phone"),
-                    React.DOM.input({type: "text", className: "form-control", valueLink: this.linkState("contact_person_phone")})),
+                getFieldsBasedOnType.call(this, "company"),
                 React.DOM.input({type: "submit", value: "Update customer", className: "btn btn-primary"}),
                 " ",
                 React.DOM.a({className: "btn btn-default", onClick: this.onCancelClicked}, "Cancel"));
