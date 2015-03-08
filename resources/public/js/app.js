@@ -62,6 +62,7 @@
                             {className: "nav navbar-nav"},
                             NavbarLink({to: "users"}, "Users"),
                             NavbarLink({to: "customers"}, "Customers"),
+                            NavbarLink({to: "hourlyBookings"}, "Hourly bookings"),
                             NavbarLink({to: "monthlyRentals"}, "Monthly rentals")))),
                 React.DOM.div(
                     {className: "container-fluid"},
@@ -223,6 +224,22 @@
         }
     });
 
+    HourlyBookingsIndexHandlerClass = React.createClass({
+        statics: {
+            fetchData: function (stores, state) {
+                return {
+                    recentlyDeletedHourlyBookings: stores.hourlyBookingStore.getRecentlyDeletedHourlyBookings()
+                }
+            }
+        },
+
+        render: function () {
+            return HOURLY_BOOKING_COMPONENTS.HourlyBookingsOverview({
+                recentlyDeletedHourlyBookings: this.props.fetchedData.recentlyDeletedHourlyBookings
+            });
+        }
+    });
+
 
 
     var target = document.getElementById("olyp-admin-app");
@@ -256,6 +273,8 @@
                         Route({name: "customerNew", path: "/customers/new", handler: CustomerNewHandlerClass}),
                         Route({name: "companyCustomerEdit", path: "/customers/company/:customerId", handler: CompanyCustomerEditHandlerClass}),
                         Route({name: "personCustomerEdit", path: "/customers/person/:customerId", handler: PersonCustomerEditHandlerClass})),
+                  Route({name: "hourlyBookings", path: "/hourly_bookings", handler: GenericIndexHandlerClass},
+                        DefaultRoute({name: "hourlyBookingsIndex", handler: HourlyBookingsIndexHandlerClass})),
                   Route({name: "monthlyRentals", path: "/monthly_rentals", handler: GenericIndexHandlerClass},
                         DefaultRoute({name: "monthlyRentalsIndex", handler: MonthlyRentalsIndexHandlerClass})))
         ]
@@ -265,7 +284,8 @@
         userStore: USER_STORE.create(http),
         customerStore: CUSTOMER_STORE.create(http),
         passwordStore: PASSWORD_STORE.create(),
-        monthlyRentalStore: MONTHLY_RENTAL_STORE.create(http)
+        monthlyRentalStore: MONTHLY_RENTAL_STORE.create(http),
+        hourlyBookingStore: HOURLY_BOOKING_STORE.create(http)
     };
 
     var actions = {
@@ -293,9 +313,7 @@
         for (var key in toFetch) {
             (function (key) {
                 var fetchPromise = toFetch[key];
-                var deferred = when.defer();
-                fetchPromise.then(function (resolvedValue) { deferred.resolve({key: key, resolvedValue: resolvedValue}); })
-                fetchPromises.push(deferred.promise);
+                fetchPromises.push(fetchPromise.then(function (resolvedValue) { return {key: key, resolvedValue: resolvedValue}}))
             }(key));
         }
 
@@ -315,8 +333,16 @@
                 loadingIndicatorEl.style.display = "none";
             },
             function (err) {
-                alert("An unknown error occurred: " + err);
                 loadingIndicatorEl.style.display = "none";
+
+
+                if (err instanceof Error) {
+                    console.log(err);
+                    alert("An unknown error occurred: " + err.message);
+                    return;
+                }
+
+                alert("An unknown error occurred: " + JSON.stringify(err));
             }
         );
     });

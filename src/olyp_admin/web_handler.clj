@@ -34,6 +34,8 @@
   (concat
    (assets/load-bundle "public" "lib.js" ["/js/lib/when-3.6.4.js"
                                           "/js/lib/react-router-0.11.6.js"
+                                          "/js/lib/moment-2.8.4.js"
+                                          "/js/lib/moment-timezone-with-data-0.2.5.js"
                                           "/js/olyp_app_utils/http.js"])
    ;; (assets/load-bundle "public" "reusable_crud.js" ["/js/reusable_crud/reusable_crud_components.js"
    ;;                                                  "/js/reusable_crud/reusable_crud_actions.js"
@@ -51,9 +53,11 @@
                                           "/js/stores/user_store.js"
                                           "/js/stores/customer_store.js"
                                           "/js/stores/password_store.js"
+                                          "/js/stores/hourly_booking_store.js"
                                           "/js/stores/monthly_rental_store.js"
                                           "/js/components/user_components.js"
                                           "/js/components/customer_components.js"
+                                          "/js/components/hourly_booking_components.js"
                                           "/js/components/monthly_rental_components.js"
                                           "/js/actions/user_actions.js"
                                           "/js/actions/customer_actions.js"
