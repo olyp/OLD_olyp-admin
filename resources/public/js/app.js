@@ -224,7 +224,7 @@
         }
     });
 
-    HourlyBookingsIndexHandlerClass = React.createClass({
+    var HourlyBookingsIndexHandlerClass = React.createClass({
         statics: {
             fetchData: function (stores, state) {
                 return {
