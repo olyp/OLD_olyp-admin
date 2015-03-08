@@ -37,18 +37,9 @@
                                           "/js/lib/moment-2.8.4.js"
                                           "/js/lib/moment-timezone-with-data-0.2.5.js"
                                           "/js/olyp_app_utils/http.js"])
-   ;; (assets/load-bundle "public" "reusable_crud.js" ["/js/reusable_crud/reusable_crud_components.js"
-   ;;                                                  "/js/reusable_crud/reusable_crud_actions.js"
-   ;;                                                  "/js/reusable_crud/reusable_crud_store.js"])
    (assets/load-bundle "public" "app.css" ["/bootstrap/css/bootstrap.css"
                                            "/bootstrap/css/bootstrap-theme.css"
                                            "/css/app.css"])
-   ;; (assets/load-bundle "public" "users.js" ["/js/users/users_components.js"
-   ;;                                          "/js/users/users_store.js"
-   ;;                                          "/js/users/users_actions.js"
-   ;;                                          "/js/users/users.js"])
-   ;; (assets/load-bundle "public" "customers.js" ["/js/customers/customers_components.js"
-   ;;                                              "/js/customers/customers.js"])
    (assets/load-bundle "public" "app.js" ["/js/stores/store_utils.js"
                                           "/js/stores/user_store.js"
                                           "/js/stores/customer_store.js"
