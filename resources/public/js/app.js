@@ -63,7 +63,8 @@
                             NavbarLink({to: "users"}, "Users"),
                             NavbarLink({to: "customers"}, "Customers"),
                             NavbarLink({to: "hourlyBookings"}, "Hourly bookings"),
-                            NavbarLink({to: "monthlyRentals"}, "Monthly rentals")))),
+                            NavbarLink({to: "monthlyRentals"}, "Monthly rentals"),
+                            NavbarLink({to: "invoices"}, "Invoices")))),
                 React.DOM.div(
                     {className: "container-fluid"},
                     RouteHandler(this.props)));
@@ -240,6 +241,12 @@
         }
     });
 
+    var InvoicesIndexHandlerClass = React.createClass({
+        render: function () {
+            return INVOICE_COMPONENTS.ListInvoiceBatches({});
+        }
+    });
+
 
 
     var target = document.getElementById("olyp-admin-app");
@@ -276,7 +283,9 @@
                   Route({name: "hourlyBookings", path: "/hourly_bookings", handler: GenericIndexHandlerClass},
                         DefaultRoute({name: "hourlyBookingsIndex", handler: HourlyBookingsIndexHandlerClass})),
                   Route({name: "monthlyRentals", path: "/monthly_rentals", handler: GenericIndexHandlerClass},
-                        DefaultRoute({name: "monthlyRentalsIndex", handler: MonthlyRentalsIndexHandlerClass})))
+                        DefaultRoute({name: "monthlyRentalsIndex", handler: MonthlyRentalsIndexHandlerClass})),
+                  Route({name: "invoices", path: "/invoices", handler: GenericIndexHandlerClass},
+                        DefaultRoute({name: "invoicesIndex", handler: InvoicesIndexHandlerClass})))
         ]
     });
 
@@ -285,7 +294,8 @@
         customerStore: CUSTOMER_STORE.create(http),
         passwordStore: PASSWORD_STORE.create(),
         monthlyRentalStore: MONTHLY_RENTAL_STORE.create(http),
-        hourlyBookingStore: HOURLY_BOOKING_STORE.create(http)
+        hourlyBookingStore: HOURLY_BOOKING_STORE.create(http),
+        invoiceStore: INVOICE_STORE.create(http)
     };
 
     var actions = {
