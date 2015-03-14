@@ -242,8 +242,36 @@
     });
 
     var InvoicesIndexHandlerClass = React.createClass({
+        statics: {
+            fetchData: function (stores, state) {
+                return {
+                    invoiceBatches: stores.invoiceStore.getInvoiceBatches()
+                }
+            }
+        },
+
         render: function () {
-            return INVOICE_COMPONENTS.ListInvoiceBatches({});
+            return INVOICE_COMPONENTS.ListInvoiceBatches({
+                invoiceBatches: this.props.fetchedData.invoiceBatches,
+                actions: this.props.actions
+            });
+        }
+    });
+
+    var InvoiceBatcheShowHandlerClass = React.createClass({
+        statics: {
+            fetchData: function (stores, state) {
+                return {
+                    invoiceBatch: stores.invoiceStore.getInvoiceBatch(state.params.invoiceBatchId)
+                };
+            }
+        },
+
+
+        render: function () {
+            return INVOICE_COMPONENTS.ShowInvoiceBatch({
+                invoiceBatch: this.props.fetchedData.invoiceBatch
+            });
         }
     });
 
@@ -285,7 +313,8 @@
                   Route({name: "monthlyRentals", path: "/monthly_rentals", handler: GenericIndexHandlerClass},
                         DefaultRoute({name: "monthlyRentalsIndex", handler: MonthlyRentalsIndexHandlerClass})),
                   Route({name: "invoices", path: "/invoices", handler: GenericIndexHandlerClass},
-                        DefaultRoute({name: "invoicesIndex", handler: InvoicesIndexHandlerClass})))
+                        DefaultRoute({name: "invoicesIndex", handler: InvoicesIndexHandlerClass}),
+                        Route({name: "invoiceBatchShow", path: "/invoice_batches/:invoiceBatchId", handler: InvoiceBatcheShowHandlerClass})))
         ]
     });
 
@@ -300,7 +329,8 @@
 
     var actions = {
         userActions: USER_ACTIONS.create(router, stores.userStore),
-        customerActions: CUSTOMER_ACTIONS.create(router, stores.customerStore)
+        customerActions: CUSTOMER_ACTIONS.create(router, stores.customerStore),
+        invoiceActions: INVOICE_ACTIONS.create(router)
     };
 
     router.run(function (Handler, state) {

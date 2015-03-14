@@ -54,6 +54,7 @@
                                           "/js/components/invoice_components.js"
                                           "/js/actions/user_actions.js"
                                           "/js/actions/customer_actions.js"
+                                          "/js/actions/invoice_actions.js"
                                           "/js/app.js"])))
 
 (defn get-assets [env]
