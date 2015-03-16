@@ -43,7 +43,7 @@ var INVOICE_COMPONENTS = (function () {
         var fraction = parseFloat("0." + fractionStr, 10);
         var res = fraction.toString();
         if (res.length === 1) {
-            return "0" + res;
+            return digitsToStr(res, 2);
         } else {
             return res;
         }
@@ -56,6 +56,18 @@ var INVOICE_COMPONENTS = (function () {
         return span({title: currencyStr}, whole + "." + roundFraction(fraction, 2))
     }
 
+    function digitsToStr(digits, n) {
+        var digitsStr = digits.toString();
+        if (digitsStr.length == n) {
+            return digitsStr;
+        } else {
+            var prefix = [];
+            for (var i = 0 + digitsStr.length; i < n; i++) {
+                prefix.push("0");
+            }
+            return prefix.join("") + digitsStr;
+        }
+    }
     var ShowInvoiceBatchClass = React.createClass({
         render: function () {
             return div(
@@ -72,11 +84,15 @@ var INVOICE_COMPONENTS = (function () {
                                 div({className: "row", style: {fontWeight: "bold"}},
                                     div({className: "col-xs-2"}, "From"),
                                     div({className: "col-xs-2"}, "To"),
-                                    div({className: "col-xs-8"}, "User")),
+                                    div({className: "col-xs-2"}, "Duration"),
+                                    div({className: "col-xs-6"}, "User")),
                                 invoice.reservations.map(function (reservation) {
                                     var booking = reservation.booking;
                                     var from = moment(reservation.from).tz("Europe/Oslo");
                                     var to = moment(reservation.to).tz("Europe/Oslo");
+                                    var durationInMinutes = to.diff(from, "minutes");
+                                    var durationHours = Math.floor(durationInMinutes / 60);
+                                    var durationMinutes = durationInMinutes % 60;
 
                                     return div(
                                         {key: "booking-" + booking.id, className: "row"},
@@ -84,7 +100,9 @@ var INVOICE_COMPONENTS = (function () {
                                             from.format("DD.MM.YYYY, HH:mm")),
                                         div({className: "col-xs-2"},
                                             to.format("DD.MM.YYYY, HH:mm")),
-                                        div({className: "col-xs-8"},
+                                        div({className: "col-xs-2"},
+                                            durationHours + ":" + digitsToStr(durationMinutes, 2)),
+                                        div({className: "col-xs-6"},
                                             booking.user.name));
                                 }))),
                         div({className: "row", style: {marginTop: "2em"}},
