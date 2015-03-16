@@ -83,8 +83,6 @@ var INVOICE_COMPONENTS = (function () {
 
         getInitialState: function () {
             return {
-                sum: 0,
-                sumWithTax: 0,
                 tax: 0,
                 quantity: 1
             };
