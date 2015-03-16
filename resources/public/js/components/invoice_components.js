@@ -4,6 +4,7 @@ var INVOICE_COMPONENTS = (function () {
     var div = React.DOM.div;
     var a = React.DOM.a;
     var span = React.DOM.span;
+    var input = React.DOM.input;
 
     var ListInvoiceBatchesClass = React.createClass({
         gotoBatch: function (batch) {
@@ -68,8 +69,101 @@ var INVOICE_COMPONENTS = (function () {
             return prefix.join("") + digitsStr;
         }
     }
-    var ShowInvoiceBatchClass = React.createClass({
+
+    function propOr(a, b, prop) {
+        if (a.hasOwnProperty(prop)) {
+            return a[prop];
+        } else {
+            return b[prop];
+        }
+    }
+
+    var InvoiceLineFormRowClass = React.createClass({
+        mixins: [React.addons.LinkedStateMixin],
+
+        getInitialState: function () {
+            return {
+                sum: 0,
+                sumWithTax: 0,
+                tax: 0,
+                quantity: 1
+            };
+        },
+
+        onSaveButtonClicked: function () {
+        },
+
+        computeSum: function (unitPrice, tax, quantity) {
+            var taxFactor = (tax / 100) || 0;
+            var sum = unitPrice * quantity;
+            if (isNaN(sum)) {
+                this.setState({sum: 0, sumWithTax: 0});
+            } else {
+                this.setState({sum: sum, sumWithTax: sum + (sum * taxFactor)});
+            }
+        },
+
+        clearSum: function () {
+            this.setState({sum: "", sumWithTax: ""});
+        },
+
+        setPriceAttr: function (attr, stringValue) {
+            var intValue = parseInt(stringValue, 10);
+            if (isNaN(intValue)) {
+                var newState = {};
+                newState[attr] = stringValue;
+                this.setState(newState);
+                this.clearSum();
+            } else {
+                var newState = {};
+                newState[attr] = intValue;
+                this.setState(newState);
+                this.computeSum(propOr(newState, this.state, "unitPrice"), propOr(newState, this.state, "tax"), propOr(newState, this.state, "quantity"));
+            }
+        },
+
+        onUnitPriceChanged: function (e) {
+            this.setPriceAttr("unitPrice", e.target.value);
+        },
+
+        onTaxChanged: function (e) {
+            this.setPriceAttr("tax", e.target.value);
+        },
+
+        onQuantityChanged: function (e) {
+            this.setPriceAttr("quantity", e.target.value);
+        },
+
         render: function () {
+            return div({className: "row", style: {marginTop: "2px", marginBottom: "2px"}},
+                       div({className: "col-xs-2"},
+                           div({className: "row"},
+                               div({className: "col-xs-4"}, input({className: "table-form-control", valueLink: this.linkState("product_code")})),
+                               div({className: "col-xs-4"}, input({className: "table-form-control", value: this.state.tax, onChange: this.onTaxChanged})),
+                               div({className: "col-xs-4"}, input({className: "table-form-control", value: this.state.quantity, onChange: this.onQuantityChanged})))),
+                       div({className: "col-xs-2", style: {textAlign: "right"}}, input({className: "table-form-control-right", value: this.state.unitPrice, onChange: this.onUnitPriceChanged})),
+                       div({className: "col-xs-2", style: {textAlign: "right"}}, input({className: "table-form-control-right", value: this.state.sum, readOnly: true})),
+                       div({className: "col-xs-2", style: {textAlign: "right"}}, input({className: "table-form-control-right", value: this.state.sumWithTax, readOnly: true})),
+                       div({className: "col-xs-3"}, input({className: "table-form-control", valueLink: this.linkState("description")})),
+                       div({className: "col-xs-1"}, a({className: "btn btn-default btn-sm", onClick: this.onSaveButtonClicked}, this.props.buttonTitle)))
+        }
+    });
+    var InvoiceLineFormRow = React.createFactory(InvoiceLineFormRowClass);
+
+    var ShowInvoiceBatchClass = React.createClass({
+        onInvoiceLineEditClicked: function (line) {
+        },
+
+        onInvoiceLineDeleteClicked: function (line) {
+        },
+
+        addRow: function (formData) {
+            console.log("ADD", formData);
+        },
+
+        render: function () {
+            var self = this;
+
             return div(
                 null,
                 a({className: "btn btn-default btn-lg", style: {}}, span({className: "glyphicon glyphicon-lock"}), " Unlocked"),
@@ -131,8 +225,13 @@ var INVOICE_COMPONENTS = (function () {
                                             div({className: "col-xs-2", style: {textAlign: "right"}}, displayCurrency(line.unit_price)),
                                             div({className: "col-xs-2", style: {textAlign: "right"}}, displayCurrency(line.sum_with_tax)),
                                             div({className: "col-xs-2", style: {textAlign: "right"}}, displayCurrency(line.sum_without_tax)),
-                                            div({className: "col-xs-4"}, line.description));
+                                            div({className: "col-xs-3"}, line.description),
+                                            div({className: "col-xs-1"},
+                                                a({className: "btn btn-default btn-xs", onClick: function () { self.onInvoiceLineEditClicked(line) }}, span({className: "glyphicon glyphicon-pencil"})),
+                                                " ",
+                                                a({className: "btn btn-default btn-xs", onClick: function () { self.onInvoiceLineDeleteClicked(line) }}, span({className: "glyphicon glyphicon-trash"}))));
                                     })),
+                                InvoiceLineFormRow({buttonTitle: "Add line", onSubmit: function (formData) { self.addRow(formData); }}),
                                 div({className: "row", style: {backgroundColor: "#FDFA76"}},
                                     div({className: "col-xs-1 col-xs-offset-3",
                                          style: {fontWeight: "bold", textAlign: "right"}},

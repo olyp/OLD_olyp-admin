@@ -67,3 +67,16 @@ a {
 .calendar-grid-booking-overlaps-next {
     border-bottom: none;
 }
+
+.table-form-control {
+    width: 100%;
+    margin: 2px 0;
+    margin-left: -4px;
+}
+
+.table-form-control-right {
+    width: 100%;
+    margin: 2px 0;
+    margin-right: -4px;
+    text-align: right;
+}
