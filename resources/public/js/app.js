@@ -63,8 +63,7 @@
                             NavbarLink({to: "users"}, "Users"),
                             NavbarLink({to: "customers"}, "Customers"),
                             NavbarLink({to: "hourlyBookings"}, "Hourly bookings"),
-                            NavbarLink({to: "monthlyRentals"}, "Monthly rentals"),
-                            NavbarLink({to: "invoices"}, "Invoices")))),
+                            NavbarLink({to: "monthlyRentals"}, "Monthly rentals")))),
                 React.DOM.div(
                     {className: "container-fluid"},
                     RouteHandler(this.props)));
@@ -229,53 +228,65 @@
         statics: {
             fetchData: function (stores, state) {
                 return {
-                    recentlyDeletedHourlyBookings: stores.hourlyBookingStore.getRecentlyDeletedHourlyBookings()
+                    recentlyDeletedHourlyBookings: stores.hourlyBookingStore.getRecentlyDeletedHourlyBookings(),
+                    hourlyBookingBatches: stores.hourlyBookingStore.getHourlyBookingBatches()
                 }
             }
         },
 
         render: function () {
             return HOURLY_BOOKING_COMPONENTS.HourlyBookingsOverview({
-                recentlyDeletedHourlyBookings: this.props.fetchedData.recentlyDeletedHourlyBookings
-            });
-        }
-    });
-
-    var InvoicesIndexHandlerClass = React.createClass({
-        statics: {
-            fetchData: function (stores, state) {
-                return {
-                    invoiceBatches: stores.invoiceStore.getInvoiceBatches()
-                }
-            }
-        },
-
-        render: function () {
-            return INVOICE_COMPONENTS.ListInvoiceBatches({
-                invoiceBatches: this.props.fetchedData.invoiceBatches,
+                recentlyDeletedHourlyBookings: this.props.fetchedData.recentlyDeletedHourlyBookings,
+                hourlyBookingBatches: this.props.fetchedData.hourlyBookingBatches,
                 actions: this.props.actions
             });
         }
     });
 
-    var InvoiceBatcheShowHandlerClass = React.createClass({
+    var HourlyBookingsUnbatchedHandlerClass = React.createClass({
         statics: {
             fetchData: function (stores, state) {
                 return {
-                    invoiceBatch: stores.invoiceStore.getInvoiceBatch(state.params.invoiceBatchId)
-                };
+                    unbatchedBookings: stores.hourlyBookingStore.getUnbatchedBookings(),
+                    hourlyBookingBatches: stores.hourlyBookingStore.getHourlyBookingBatches()
+                }
+            }
+        },
+
+        render: function () {
+            return HOURLY_BOOKING_COMPONENTS.HourlyBookingsUnbatched({
+                unbatchedBookings: this.props.fetchedData.unbatchedBookings,
+                hourlyBookingBatches: this.props.fetchedData.hourlyBookingBatches,
+                actions: this.props.actions
+            });
+        }
+    });
+
+    var HourlyBookingsBatchNewHandlerClass = React.createClass({
+        render: function () {
+            return HOURLY_BOOKING_COMPONENTS.HourlyBookingsBatchNew({
+                actions: this.props.actions
+            });
+        }
+    });
+
+    var HourlyBookingsBatchShowHandlerClass = React.createClass({
+        statics: {
+            fetchData: function (stores, state) {
+                return {
+                    hourlyBookingBatch: stores.hourlyBookingStore.getHourlyBookingBatch(state.params.hourlyBookingBatchId)
+                }
             }
         },
 
 
         render: function () {
-            return INVOICE_COMPONENTS.ShowInvoiceBatch({
-                invoiceBatch: this.props.fetchedData.invoiceBatch
+            return HOURLY_BOOKING_COMPONENTS.HourlyBookingsBatchShow({
+                hourlyBookingBatch: this.props.fetchedData.hourlyBookingBatch,
+                actions: this.props.actions
             });
         }
     });
-
-
 
     var target = document.getElementById("olyp-admin-app");
     var loadingIndicatorEl = document.createElement("div");
@@ -309,12 +320,12 @@
                         Route({name: "companyCustomerEdit", path: "/customers/company/:customerId", handler: CompanyCustomerEditHandlerClass}),
                         Route({name: "personCustomerEdit", path: "/customers/person/:customerId", handler: PersonCustomerEditHandlerClass})),
                   Route({name: "hourlyBookings", path: "/hourly_bookings", handler: GenericIndexHandlerClass},
-                        DefaultRoute({name: "hourlyBookingsIndex", handler: HourlyBookingsIndexHandlerClass})),
+                        DefaultRoute({name: "hourlyBookingsIndex", handler: HourlyBookingsIndexHandlerClass}),
+                        Route({name: "hourlyBookingsUnbatched", path: "/hourly_bookings/unbatched", handler: HourlyBookingsUnbatchedHandlerClass}),
+                        Route({name: "hourlyBookingsBatchNew", path: "/hourly_bookings/batches/new", handler: HourlyBookingsBatchNewHandlerClass}),
+                        Route({name: "hourlyBookingsBatchShow", path: "/hourly_bookings/batches/:hourlyBookingBatchId", handler: HourlyBookingsBatchShowHandlerClass})),
                   Route({name: "monthlyRentals", path: "/monthly_rentals", handler: GenericIndexHandlerClass},
-                        DefaultRoute({name: "monthlyRentalsIndex", handler: MonthlyRentalsIndexHandlerClass})),
-                  Route({name: "invoices", path: "/invoices", handler: GenericIndexHandlerClass},
-                        DefaultRoute({name: "invoicesIndex", handler: InvoicesIndexHandlerClass}),
-                        Route({name: "invoiceBatchShow", path: "/invoice_batches/:invoiceBatchId", handler: InvoiceBatcheShowHandlerClass})))
+                        DefaultRoute({name: "monthlyRentalsIndex", handler: MonthlyRentalsIndexHandlerClass})))
         ]
     });
 
@@ -323,14 +334,13 @@
         customerStore: CUSTOMER_STORE.create(http),
         passwordStore: PASSWORD_STORE.create(),
         monthlyRentalStore: MONTHLY_RENTAL_STORE.create(http),
-        hourlyBookingStore: HOURLY_BOOKING_STORE.create(http),
-        invoiceStore: INVOICE_STORE.create(http)
+        hourlyBookingStore: HOURLY_BOOKING_STORE.create(http)
     };
 
     var actions = {
         userActions: USER_ACTIONS.create(router, stores.userStore),
         customerActions: CUSTOMER_ACTIONS.create(router, stores.customerStore),
-        invoiceActions: INVOICE_ACTIONS.create(router)
+        hourlyBookingActions: HOURLY_BOOKING_ACTIONS.create(router, stores.hourlyBookingStore)
     };
 
     router.run(function (Handler, state) {
