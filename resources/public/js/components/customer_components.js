@@ -203,8 +203,37 @@ var CUSTOMER_COMPONENTS = (function () {
     var EditCompanyCustomerForm = React.createFactory(EditCompanyCustomerFormClass);
 
     var EditPersonCustomerFormClass = React.createClass({
+        mixins: [React.addons.LinkedStateMixin],
+
+        onSubmit: function (e) {
+            e.preventDefault()
+            this.props.actions.customerActions.updatePersonCustomer(this.props.customer, this.state);
+        },
+
+        onCancelClicked: function () {
+            this.props.actions.customerActions.cancelEditCustomer();
+        },
+
+        getInitialState: function () {
+            var state = {};
+            ["name", "address", "zip", "city", "contact_person_email", "contact_person_phone", "version", "room_booking_free_hours", "room_booking_hourly_price"].forEach(function (prop) {
+                state[prop] = this.props.customer[prop]
+            }.bind(this));
+
+            return state;
+        },
+
         render: function () {
-            return React.DOM.div(null, "Edit person not implemented yet LOLOL");
+            return React.DOM.form(
+                {onSubmit: this.onSubmit},
+                React.DOM.div(
+                    {className: "form-group"},
+                    React.DOM.label(null, "Name"),
+                    React.DOM.input({type: "text", className: "form-control", valueLink: this.linkState("name")})),
+                getFieldsBasedOnType.call(this, "person"),
+                React.DOM.input({type: "submit", value: "Update customer", className: "btn btn-primary"}),
+                " ",
+                React.DOM.a({className: "btn btn-default", onClick: this.onCancelClicked}, "Cancel"))
         }
     });
     var EditPersonCustomerForm = React.createFactory(EditPersonCustomerFormClass);

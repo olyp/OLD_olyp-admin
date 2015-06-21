@@ -37,6 +37,10 @@ var CUSTOMER_STORE = (function () {
 
             updateCompanyCustomer: function (customerId, data) {
                 return STORE_UTILS.prettyErr(http("PUT", "/central_api_proxy/company_customers/" + customerId, processCustomerData(data)));
+            },
+
+            updatePersonCustomer: function (customerId, data) {
+                return STORE_UTILS.prettyErr(http("PUT", "/central_api_proxy/person_customers/" + customerId, processCustomerData(data)));
             }
         }
     }

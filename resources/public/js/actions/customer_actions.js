@@ -51,6 +51,17 @@ var CUSTOMER_ACTIONS = (function () {
                 );
             },
 
+            updatePersonCustomer: function (customer, data) {
+                customerStore.updatePersonCustomer(customer.id, data).then(
+                    function () {
+                        router.transitionTo("customers");
+                    },
+                    function (err) {
+                        alert("An unknown error occurred: " + err);
+                    }
+                );
+            },
+
             cancelEditCustomer: function () {
                 router.transitionTo("customers");
             }
