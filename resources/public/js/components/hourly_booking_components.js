@@ -228,19 +228,28 @@ var HOURLY_BOOKING_COMPONENTS = (function () {
                                 div({className: "col-xs-2"}, moment(hourlyBooking.to).format(BOOKING_DATE_FORMAT)),
                                 div({className: "col-xs-4"}, "-"))
                         }.bind(this)),
-                        React.DOM.p(),
+                        React.DOM.p(null, React.DOM.span({style: {fontWeight: "bold"}}, "Free hours"), ": " + customer.room_booking_free_hours),
                         React.DOM.div(
                             {className: "row", style: {fontWeight: "bold"}},
-                            React.DOM.div({className: "col-xs-1"}, "Total hours"),
+                            React.DOM.div({className: "col-xs-1"}),
+                            React.DOM.div({className: "col-xs-1"}, "Hours"),
                             React.DOM.div({className: "col-xs-1"}, "Sum"),
                             React.DOM.div({className: "col-xs-1"}, "Sum (w/tax)"),
                             React.DOM.div({className: "col-xs-1"}, "Tax")),
                         React.DOM.div(
-                            {className: "row", style: {backgroundColor: "#FDFA76"}},
-                            React.DOM.div({className: "col-xs-1"}, line.total_hours),
-                            React.DOM.div({className: "col-xs-1"}, line.sum_without_tax),
-                            React.DOM.div({className: "col-xs-1"}, line.sum_with_tax),
-                            React.DOM.div({className: "col-xs-1"}, line.tax)));
+                            {className: "row"},
+                            React.DOM.div({className: "col-xs-1", style: {fontWeight: "bold"}}, "Total"),
+                            React.DOM.div({className: "col-xs-1", style: {backgroundColor: "#FDFA76"}}, line.total_hours),
+                            React.DOM.div({className: "col-xs-1", style: {backgroundColor: "#FDFA76"}}, line.base_sum_without_tax),
+                            React.DOM.div({className: "col-xs-1", style: {backgroundColor: "#FDFA76"}}, line.base_sum_with_tax),
+                            React.DOM.div({className: "col-xs-1", style: {backgroundColor: "#FDFA76"}}, line.tax)),
+                        React.DOM.div(
+                            {className: "row"},
+                            React.DOM.div({className: "col-xs-1", style: {fontWeight: "bold"}}, "Billable"),
+                            React.DOM.div({className: "col-xs-1", style: {backgroundColor: "#FDFA76"}}, Math.max(0, line.total_hours - customer.room_booking_free_hours)),
+                            React.DOM.div({className: "col-xs-1", style: {backgroundColor: "#FDFA76"}}, line.sum_without_tax),
+                            React.DOM.div({className: "col-xs-1", style: {backgroundColor: "#FDFA76"}}, line.sum_with_tax),
+                            React.DOM.div({className: "col-xs-1", style: {backgroundColor: "#FDFA76"}}, line.tax)));
                 }.bind(this)));
         }
     });
